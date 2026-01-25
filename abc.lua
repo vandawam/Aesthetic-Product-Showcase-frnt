@@ -3080,7 +3080,7 @@ local function loadTabEvent()
         Value = false,
         Callback = function(Value)
             if Value then
-                task.spawn(collectCrystals)
+                collectCrystals()
                 task.wait(1)
                 StartListener()
                 WindUI:Notify({ Title = "Auto Crystal", Content = "Auto Crystal Aktif", Duration = 3, Icon = "check" })
