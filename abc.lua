@@ -3001,7 +3001,7 @@ local function loadTabEvent()
 
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5808.42529, -899.366394, 15353.1709, -0.997745156, 3.95877414e-10, 0.0671164095, 4.13268725e-10, 1, 2.45237053e-10, -0.0671164095, 2.72421197e-10, -0.997745156)
         
-        task.wait(0.5)
+        task.wait(1.5)
         
         local crystals = getCrystalsWithPrompt()
         
