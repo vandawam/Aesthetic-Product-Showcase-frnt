@@ -355,5 +355,6 @@ end
 -- ===== EKSEKUSI =====
 
 collectCrystals()
+print("tempueeekkkkk")
 task.wait(1)
 HopServer()
