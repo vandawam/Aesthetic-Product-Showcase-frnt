@@ -4693,6 +4693,7 @@
 						Description = "Otomatis mengumpulkan Crystal",
 						Default = false,
 						Callback = function(Value)
+							print("BONFEINNEFFFFF")
 							if Value then
 								print("O")
 								collectCrystals()
