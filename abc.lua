@@ -4574,6 +4574,7 @@
     -- Main collection function
     local function collectCrystals()
 		print("--- AUTO CRYSTAL COLLECTION STARTED ---")
+		print("CUKIMAY")
         local oldLocation = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame or nil
         local oldEquip = _G.ToggleEquipRod.Value
         local oldLegit = _G.ToggleLegit.Value
@@ -4583,6 +4584,7 @@
 		local oldBlantanV2 = _G.ToggleBlantantV2.Value
 
 		print("try set")
+		print("GOLOK")
         _G.ToggleLegit:SetValue(false)
         _G.ToggleEquipRod:SetValue(false)
 		_G.ToggleInstant:SetValue(false)
@@ -4695,6 +4697,7 @@
 						Default = false,
 						Callback = function(Value)
 							print("BONFEINNEFFFFF")
+							print("KONTOOLOLLLLL")
 							if Value then
 								print("O")
 								collectCrystals()
