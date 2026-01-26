@@ -254,8 +254,8 @@ local function HopServer()
     end
 
     while true do
-        -- URL API Roblox
-        local url = 'https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
+        -- [FIX] GANTI URL: Gunakan 'roproxy.com' bukan 'roblox.com'
+        local url = 'https://games.roproxy.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
         
         if cursor and cursor ~= "" then
             url = url .. "&cursor=" .. cursor
@@ -268,53 +268,54 @@ local function HopServer()
         
         -- 1. Cek Koneksi Dasar
         if not success or not response then
-            warn("⚠️ Request Gagal (Network Error). Mengulang dalam 3 detik...")
+            warn("⚠️ Request Gagal. Mengulang dalam 3 detik...")
             task.wait(3)
             continue
         end
 
-        -- 2. Cek Status Code (429 = Too Many Requests)
+        -- 2. Cek Status Code
         if response.StatusCode == 429 then
-            warn("⚠️ Rate Limit (429). Terlalu banyak request, menunggu 5 detik...")
+            warn("⚠️ Rate Limit (429). Tunggu 5 detik...")
             task.wait(5)
             continue
         end
-
-        -- 3. Cek Body Kosong
-        if not response.Body or #response.Body == 0 then
-            warn("⚠️ Response Body kosong. Mengulang...")
-            task.wait(3)
-            continue
-        end
         
-        -- 4. [FIX ERROR JSON] Safe Decode JSON
-        -- Kita bungkus JSONDecode dalam pcall agar script TIDAK CRASH jika Roblox kirim HTML error
+        -- 3. Cek Error 403 (Jika proxy juga diblokir/down)
+        if response.StatusCode == 403 then
+            warn("⚠️ Proxy Error (403). Mencoba URL alternatif...")
+            -- Coba mirror lain jika roproxy gagal (opsional)
+            url = 'https://games.rprxy.xyz/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
+             if cursor and cursor ~= "" then url = url .. "&cursor=" .. cursor end
+             
+             pcall(function() response = requestfunc({ Url = url, Method = "GET" }) end)
+        end
+
+        -- 4. Safe Decode JSON
         local Site = nil
         local decodeSuccess, decodeErr = pcall(function()
             Site = HttpService:JSONDecode(response.Body)
         end)
 
         if not decodeSuccess then
-            warn("❌ Error: Can't parse JSON.")
-            print("📄 Isi Response Asli (Debug):", string.sub(response.Body, 1, 100)) -- Print 100 huruf pertama buat cek
+            warn("❌ Gagal Decode JSON. Response bukan data server.")
+            print("📄 Debug Response:", string.sub(tostring(response.Body), 1, 100))
             task.wait(3)
-            continue -- Skip loop ini, jangan crash
+            continue
         end
 
         if not Site or not Site.data then
-            warn("⚠️ Format JSON tidak sesuai (Missing 'data'). Mengulang...")
+            warn("⚠️ Format data salah (Missing 'data'). Mengulang...")
             cursor = "" 
             task.wait(2)
             continue
         end
         
-        -- Update Cursor untuk halaman berikutnya
+        -- Update Cursor
         cursor = Site.nextPageCursor or ""
         
         local validServers = {}
         
         for _, v in pairs(Site.data) do
-            -- Filter server valid (bukan server sendiri & ada orangnya)
             if v.playing and v.id ~= game.JobId and v.playing > 0 then
                 table.insert(validServers, v.id)
             end
@@ -323,13 +324,13 @@ local function HopServer()
         if #validServers > 0 then
             print("🚀 Menemukan " .. #validServers .. " server kosong. OTW...")
             
-            -- Acak urutan server biar gak numpuk di satu server
+            -- Acak
             for i = #validServers, 2, -1 do
                 local j = math.random(i)
                 validServers[i], validServers[j] = validServers[j], validServers[i]
             end
             
-            -- Coba Teleport satu per satu
+            -- Teleport
             for _, serverID in ipairs(validServers) do
                 local tpSuccess = pcall(function()
                     TeleportService:TeleportToPlaceInstance(PlaceID, serverID, LocalPlayer)
@@ -340,11 +341,11 @@ local function HopServer()
                 end
             end
         else
-            print("ℹ️ Halaman ini penuh/kosong, cek halaman berikutnya...")
+            print("ℹ️ Lanjut cari ke halaman berikutnya...")
         end
         
         if cursor == "" then
-            print("🔄 Reached end of servers. Refreshing list...")
+            print("🔄 List habis, ulang dari awal...")
             task.wait(1)
         end
         
@@ -355,6 +356,6 @@ end
 -- ===== EKSEKUSI =====
 
 collectCrystals()
-print("tempueeekkkkk")
+print("woooooooooooooooooooooooooo")
 task.wait(1)
 HopServer()
