@@ -4582,12 +4582,12 @@
 		local oldInstantBeta = _G.ToggleInstantBeta.Value
 		local oldBlantanV2 = _G.ToggleBlantantV2.Value
 
-        _G.ToggleLegit:Set(false)
-        _G.ToggleEquipRod:Set(false)
-		_G.ToggleInstant:Set(false)
-		_G.ToggleBlantant:Set(false)
-		_G.ToggleInstantBeta:Set(false)
-		_G.ToggleBlantantV2:Set(false)
+        _G.ToggleLegit:SetValue(false)
+        _G.ToggleEquipRod:SetValue(false)
+		_G.ToggleInstant:SetValue(false)
+		_G.ToggleBlantant:SetValue(false)
+		_G.ToggleInstantBeta:SetValue(false)
+		_G.ToggleBlantantV2:SetValue(false)
 
 
         if isRunning then return end -- Prevent double run
@@ -4610,12 +4610,12 @@
         if #crystals == 0 then
             warn("❌ No crystals found!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = oldLocation
-            _G.ToggleLegit:Set(oldLegit)
-            _G.ToggleEquipRod:Set(oldEquip)
-			_G.ToggleInstant:Set(oldInstant)
-			_G.ToggleBlantant:Set(oldBlantant)
-			_G.ToggleInstantBeta:Set(oldInstantBeta)
-			_G.ToggleBlantantV2:Set(oldBlantanV2)
+            _G.ToggleLegit:SetValue(oldLegit)
+            _G.ToggleEquipRod:SetValue(oldEquip)
+			_G.ToggleInstant:SetValue(oldInstant)
+			_G.ToggleBlantant:SetValue(oldBlantant)
+			_G.ToggleInstantBeta:SetValue(oldInstantBeta)
+			_G.ToggleBlantantV2:SetValue(oldBlantanV2)
             isRunning = false
             return
         end
@@ -4650,12 +4650,12 @@
         end
         
         game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = oldLocation
-        _G.ToggleLegit:Set(oldLegit)
-        _G.ToggleEquipRod:Set(oldEquip)
-		_G.ToggleInstant:Set(oldInstant)
-		_G.ToggleBlantant:Set(oldBlantant)
-		_G.ToggleInstantBeta:Set(oldInstantBeta)
-		_G.ToggleBlantantV2:Set(oldBlantanV2)
+        _G.ToggleLegit:SetValue(oldLegit)
+        _G.ToggleEquipRod:SetValue(oldEquip)
+		_G.ToggleInstant:SetValue(oldInstant)
+		_G.ToggleBlantant:SetValue(oldBlantant)
+		_G.ToggleInstantBeta:SetValue(oldInstantBeta)
+		_G.ToggleBlantantV2:SetValue(oldBlantanV2)
         isRunning = false -- Release lock
     end
 
