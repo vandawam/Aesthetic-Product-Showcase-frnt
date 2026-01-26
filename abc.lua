@@ -4694,7 +4694,9 @@
 						Default = false,
 						Callback = function(Value)
 							if Value then
+								print("O")
 								collectCrystals()
+								print("J")
 								task.wait(1)
 								StartListener()
 								Fluent:Notify({
