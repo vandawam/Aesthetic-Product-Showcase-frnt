@@ -1,4 +1,3 @@
-
 -- ===== SERVICES & VARIABLES =====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -255,6 +254,7 @@ local function HopServer()
     end
 
     while true do
+        -- URL API Roblox
         local url = 'https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
         
         if cursor and cursor ~= "" then
@@ -266,34 +266,55 @@ local function HopServer()
             response = requestfunc({ Url = url, Method = "GET" })
         end)
         
-        if not success or not response or not response.Body then
-            warn("⚠️ Koneksi timeout, mencoba lagi...")
+        -- 1. Cek Koneksi Dasar
+        if not success or not response then
+            warn("⚠️ Request Gagal (Network Error). Mengulang dalam 3 detik...")
             task.wait(3)
             continue
         end
-        
-        -- Anti-Rate Limit (429)
+
+        -- 2. Cek Status Code (429 = Too Many Requests)
         if response.StatusCode == 429 then
-            warn("⚠️ Terlalu cepat! Menunggu 5 detik...")
+            warn("⚠️ Rate Limit (429). Terlalu banyak request, menunggu 5 detik...")
             task.wait(5)
             continue
         end
 
-        local Site = HttpService:JSONDecode(response.Body)
+        -- 3. Cek Body Kosong
+        if not response.Body or #response.Body == 0 then
+            warn("⚠️ Response Body kosong. Mengulang...")
+            task.wait(3)
+            continue
+        end
+        
+        -- 4. [FIX ERROR JSON] Safe Decode JSON
+        -- Kita bungkus JSONDecode dalam pcall agar script TIDAK CRASH jika Roblox kirim HTML error
+        local Site = nil
+        local decodeSuccess, decodeErr = pcall(function()
+            Site = HttpService:JSONDecode(response.Body)
+        end)
+
+        if not decodeSuccess then
+            warn("❌ Error: Can't parse JSON.")
+            print("📄 Isi Response Asli (Debug):", string.sub(response.Body, 1, 100)) -- Print 100 huruf pertama buat cek
+            task.wait(3)
+            continue -- Skip loop ini, jangan crash
+        end
 
         if not Site or not Site.data then
-            warn("⚠️ Gagal baca data, ulang...")
+            warn("⚠️ Format JSON tidak sesuai (Missing 'data'). Mengulang...")
             cursor = "" 
             task.wait(2)
             continue
         end
         
-        -- Update Cursor
+        -- Update Cursor untuk halaman berikutnya
         cursor = Site.nextPageCursor or ""
         
         local validServers = {}
         
         for _, v in pairs(Site.data) do
+            -- Filter server valid (bukan server sendiri & ada orangnya)
             if v.playing and v.id ~= game.JobId and v.playing > 0 then
                 table.insert(validServers, v.id)
             end
@@ -302,25 +323,29 @@ local function HopServer()
         if #validServers > 0 then
             print("🚀 Menemukan " .. #validServers .. " server kosong. OTW...")
             
-            -- Shuffle (Acak)
+            -- Acak urutan server biar gak numpuk di satu server
             for i = #validServers, 2, -1 do
                 local j = math.random(i)
                 validServers[i], validServers[j] = validServers[j], validServers[i]
             end
             
-            -- Teleport
+            -- Coba Teleport satu per satu
             for _, serverID in ipairs(validServers) do
                 local tpSuccess = pcall(function()
                     TeleportService:TeleportToPlaceInstance(PlaceID, serverID, LocalPlayer)
                 end)
-                if tpSuccess then task.wait(4) end
+                if tpSuccess then 
+                    print("✈️ Teleporting...")
+                    task.wait(4) 
+                end
             end
         else
-            print("ℹ️ Tidak ada server kosong di halaman ini, lanjut...")
+            print("ℹ️ Halaman ini penuh/kosong, cek halaman berikutnya...")
         end
         
         if cursor == "" then
-            print("🔄 Semua server sudah dicek, mengulang dari awal...")
+            print("🔄 Reached end of servers. Refreshing list...")
+            task.wait(1)
         end
         
         task.wait(1)
