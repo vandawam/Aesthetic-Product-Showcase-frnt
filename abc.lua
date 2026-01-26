@@ -4582,6 +4582,7 @@
 		local oldInstantBeta = _G.ToggleInstantBeta.Value
 		local oldBlantanV2 = _G.ToggleBlantantV2.Value
 
+		print("try set")
         _G.ToggleLegit:SetValue(false)
         _G.ToggleEquipRod:SetValue(false)
 		_G.ToggleInstant:SetValue(false)
