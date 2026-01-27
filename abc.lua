@@ -1,3 +1,4 @@
+task.wait(10)
 -- ===== SERVICES & VARIABLES =====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
