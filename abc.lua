@@ -346,5 +346,6 @@ local function SmartServerHop()
     SmartServerHop() -- Ulangi fungsi
 end
 
+task.wait(5)
 -- Jalankan
 SmartServerHop()
