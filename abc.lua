@@ -1,4 +1,4 @@
-task.wait(10)
+
 -- ===== SERVICES & VARIABLES =====
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -238,7 +238,7 @@ local function collectCrystals()
     isRunning = false -- Release lock
 end
 
-collectCrystals()-- realbunni.com
+
 
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
@@ -342,10 +342,21 @@ local function SmartServerHop()
     print("🔄 Reset history dan coba ulang dari awal...")
     
     if isfile(FILE_NAME) then delfile(FILE_NAME) end
-    task.wait(2)
-    SmartServerHop() -- Ulangi fungsi
+    
 end
 
+task.wait(30)
+collectCrystals()-- realbunni.com
 task.wait(5)
 -- Jalankan
 SmartServerHop()
+task.wait(5)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(5)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(5)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(5)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(5)
+    SmartServerHop() -- Ulangi fungsi
