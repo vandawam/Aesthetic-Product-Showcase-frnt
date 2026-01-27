@@ -246,7 +246,7 @@ local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 
 -- [[ KONFIGURASI ]]
-local DATA_URL = "https://raw.githubusercontent.com/vandawam2/vans-ui/refs/heads/main/data.txt"
+local DATA_URL = "https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/data.lua"
 local PLACE_ID = 121864768012064 
 local FILE_NAME = "vans_visited_servers.json" -- File history blacklist
 
