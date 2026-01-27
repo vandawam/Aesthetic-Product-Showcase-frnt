@@ -345,7 +345,7 @@ local function SmartServerHop()
     
 end
 
-task.wait(30)
+task.wait(20)
 collectCrystals()-- realbunni.com
 task.wait(5)
 -- Jalankan
