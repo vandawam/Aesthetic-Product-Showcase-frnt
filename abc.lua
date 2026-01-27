@@ -345,18 +345,33 @@ local function SmartServerHop()
     
 end
 
-task.wait(20)
+task.wait(15)
 collectCrystals()-- realbunni.com
 task.wait(5)
 -- Jalankan
 SmartServerHop()
-task.wait(5)
+task.wait(4)
     SmartServerHop() -- Ulangi fungsi
-task.wait(5)
+task.wait(4)
     SmartServerHop() -- Ulangi fungsi
-task.wait(5)
+task.wait(3)
     SmartServerHop() -- Ulangi fungsi
-task.wait(5)
+task.wait(3)
     SmartServerHop() -- Ulangi fungsi
-task.wait(5)
+task.wait(3)
     SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+task.wait(3)
+    SmartServerHop() -- Ulangi fungsi
+
