@@ -237,125 +237,113 @@ local function collectCrystals()
     isRunning = false -- Release lock
 end
 
--- Fungsi Server Hop
-local requestfunc = request or http_request or (http and http.request) or (syn and syn.request)
+collectCrystals()-- realbunni.com
 
-local function HopServer()
-    local PlaceID = game.PlaceId
-    local cursor = ""
-    
-    print("🔀 [Smart Hop] Mencari server (Otomatis skip server penuh)...")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
 
-    -- Fallback jika executor tidak support request
-    if not requestfunc then
-        requestfunc = function(options)
-            return { Body = game:HttpGet(options.Url), StatusCode = 200, Success = true }
-        end
+-- [[ KONFIGURASI ]]
+local DATA_URL = "https://raw.githubusercontent.com/vandawam2/vans-ui/refs/heads/main/data.txt"
+local PLACE_ID = 121864768012064 
+local FILE_NAME = "vans_visited_servers.json" -- File history blacklist
+
+-- [[ FUNGSI HISTORY ]]
+local function getVisitedServers()
+    if isfile(FILE_NAME) then
+        local success, result = pcall(function()
+            return HttpService:JSONDecode(readfile(FILE_NAME))
+        end)
+        if success and type(result) == "table" then return result end
     end
+    return {}
+end
 
-    while true do
-        -- [FIX] GANTI URL: Gunakan 'roproxy.com' bukan 'roblox.com'
-        local url = 'https://games.roproxy.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
-        
-        if cursor and cursor ~= "" then
-            url = url .. "&cursor=" .. cursor
-        end
-        
-        local response = nil
-        local success, err = pcall(function()
-            response = requestfunc({ Url = url, Method = "GET" })
-        end)
-        
-        -- 1. Cek Koneksi Dasar
-        if not success or not response then
-            warn("⚠️ Request Gagal. Mengulang dalam 3 detik...")
-            task.wait(3)
-            continue
-        end
-
-        -- 2. Cek Status Code
-        if response.StatusCode == 429 then
-            warn("⚠️ Rate Limit (429). Tunggu 5 detik...")
-            task.wait(5)
-            continue
-        end
-        
-        -- 3. Cek Error 403 (Jika proxy juga diblokir/down)
-        if response.StatusCode == 403 then
-            warn("⚠️ Proxy Error (403). Mencoba URL alternatif...")
-            -- Coba mirror lain jika roproxy gagal (opsional)
-            url = 'https://games.rprxy.xyz/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true'
-             if cursor and cursor ~= "" then url = url .. "&cursor=" .. cursor end
-             
-             pcall(function() response = requestfunc({ Url = url, Method = "GET" }) end)
-        end
-
-        -- 4. Safe Decode JSON
-        local Site = nil
-        local decodeSuccess, decodeErr = pcall(function()
-            Site = HttpService:JSONDecode(response.Body)
-        end)
-
-        if not decodeSuccess then
-            warn("❌ Gagal Decode JSON. Response bukan data server.")
-            print("📄 Debug Response:", string.sub(tostring(response.Body), 1, 100))
-            task.wait(3)
-            continue
-        end
-
-        if not Site or not Site.data then
-            warn("⚠️ Format data salah (Missing 'data'). Mengulang...")
-            cursor = "" 
-            task.wait(2)
-            continue
-        end
-        
-        -- Update Cursor
-        cursor = Site.nextPageCursor or ""
-        
-        local validServers = {}
-        
-        for _, v in pairs(Site.data) do
-            if v.playing and v.id ~= game.JobId and v.playing > 0 then
-                table.insert(validServers, v.id)
-            end
-        end
-        
-        if #validServers > 0 then
-            print("🚀 Menemukan " .. #validServers .. " server kosong. OTW...")
-            
-            -- Acak
-            for i = #validServers, 2, -1 do
-                local j = math.random(i)
-                validServers[i], validServers[j] = validServers[j], validServers[i]
-            end
-            
-            -- Teleport
-            for _, serverID in ipairs(validServers) do
-                local tpSuccess = pcall(function()
-                    TeleportService:TeleportToPlaceInstance(PlaceID, serverID, LocalPlayer)
-                end)
-                if tpSuccess then 
-                    print("✈️ Teleporting...")
-                    task.wait(4) 
-                end
-            end
-        else
-            print("ℹ️ Lanjut cari ke halaman berikutnya...")
-        end
-        
-        if cursor == "" then
-            print("🔄 List habis, ulang dari awal...")
-            task.wait(1)
-        end
-        
-        task.wait(1)
+local function saveCurrentServer()
+    local visited = getVisitedServers()
+    local currentId = game.JobId
+    local isRecorded = false
+    for _, id in pairs(visited) do
+        if id == currentId then isRecorded = true break end
+    end
+    if not isRecorded then
+        table.insert(visited, currentId)
+        if #visited > 20 then table.remove(visited, 1) end
+        writefile(FILE_NAME, HttpService:JSONEncode(visited))
     end
 end
 
--- ===== EKSEKUSI =====
+-- [[ FUNGSI UTAMA HOP ]]
+local function SmartServerHop()
+    saveCurrentServer() -- Simpan server ini biar gak balik lagi
+    
+    print("🌐 Mengambil data server...")
+    local success, response = pcall(function() return game:HttpGet(DATA_URL) end)
+    if not success then warn("❌ Gagal ambil data GitHub.") return end
 
-collectCrystals()
-print("woooooooooooooooooooooooooo")
-task.wait(1)
-HopServer()
+    local decodeSuccess, parsed = pcall(function() return HttpService:JSONDecode(response) end)
+    if not decodeSuccess or not parsed.data then warn("❌ JSON Rusak.") return end
+
+    local visitedServers = getVisitedServers()
+    
+    -- Acak urutan server
+    local servers = parsed.data
+    for i = #servers, 2, -1 do
+        local j = math.random(i)
+        servers[i], servers[j] = servers[j], servers[i]
+    end
+
+    print("🔍 Mencari server kosong dari " .. #servers .. " list...")
+
+    -- LOOPING MENCOBA SETIAP SERVER
+    for _, server in ipairs(servers) do
+        
+        -- Cek Blacklist History
+        local isBlacklisted = false
+        for _, visitedId in pairs(visitedServers) do
+            if server.id == visitedId then isBlacklisted = true break end
+        end
+
+        -- Syarat: Ada Slot, Bukan Server Ini, Tidak Blacklist
+        if not isBlacklisted and server.playing < server.maxPlayers and server.id ~= game.JobId then
+            
+            print("------------------------------------------------")
+            print("🚀 Mencoba masuk ke ID: " .. server.id)
+            print("👥 Pemain: " .. server.playing .. "/" .. server.maxPlayers)
+            
+            -- Notifikasi Kecil
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Mencoba Server...";
+                    Text = "Menunggu 5 detik...";
+                    Duration = 3;
+                })
+            end)
+
+            -- EKSEKUSI TELEPORT
+            TeleportService:TeleportToPlaceInstance(PLACE_ID, server.id, Players.LocalPlayer)
+
+            -- [[ FITUR UTAMA: TUNGGU 5 DETIK ]]
+            -- Jika teleport berhasil, script akan mati sendiri karena kamu pindah game.
+            -- Jika teleport GAGAL (penuh), script akan lanjut jalan ke baris di bawah ini.
+            task.wait(5) 
+
+            -- Jika script sampai ke sini, berarti GAGAL pindah (Server Penuh/Error)
+            warn("⚠️ Gagal/Penuh. Lanjut ke server berikutnya...")
+            
+            -- Lanjut loop ke server berikutnya...
+        end
+    end
+
+    -- Jika semua server dicoba dan gagal semua
+    warn("⚠️ Semua server di list sudah dicoba/penuh!")
+    print("🔄 Reset history dan coba ulang dari awal...")
+    
+    if isfile(FILE_NAME) then delfile(FILE_NAME) end
+    task.wait(2)
+    SmartServerHop() -- Ulangi fungsi
+end
+
+-- Jalankan
+SmartServerHop()
