@@ -61,6 +61,7 @@ function LoadConfigElements()
 end
 
 local Icons = {
+    home      = "rbxassetid://7733960981", -- ✅ Icon Home Ditambahkan
     player    = "rbxassetid://12120698352",
     web       = "rbxassetid://137601480983962",
     bag       = "rbxassetid://8601111810",
@@ -2947,3 +2948,10 @@ function ZuperMing:Window(GuiConfig)
 end
 
 return ZuperMing
+
+-- local Window = ZuperMing:Window()
+
+-- Window:AddTab({
+--     Name = "player",
+--     Icon = "player",
+-- })
