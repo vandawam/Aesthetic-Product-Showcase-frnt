@@ -481,7 +481,7 @@ function ZuperMing:Window(GuiConfig)
     GuiConfig              = GuiConfig or {}
     GuiConfig.Title        = GuiConfig.Title or "ZuperMing Premium"
     GuiConfig.Footer       = GuiConfig.Footer or "Version 1.37"
-    GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(100, 180, 255) -- Biru muda untuk ZuperMing
+    GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(50, 100, 255) -- Biru muda untuk ZuperMing
     GuiConfig["Tab Width"] = GuiConfig["Tab Width"] or 120
     GuiConfig.Version      = GuiConfig.Version or 1
     GuiConfig.Icon         = GuiConfig.Icon or "rbxassetid://104396282819940"  -- FIXED: New image
@@ -572,14 +572,14 @@ function ZuperMing:Window(GuiConfig)
     BackgroundImage.Image = "rbxassetid://104396282819940"
     BackgroundImage.ScaleType = Enum.ScaleType.Fit
     BackgroundImage.BackgroundTransparency = 1
-    BackgroundImage.ImageTransparency = 0.65  -- IMPROVED: Sedikit lebih terlihat (was 0.7)
+    BackgroundImage.ImageTransparency = 0.9  -- IMPROVED: Sedikit lebih terlihat (was 0.7)
     BackgroundImage.AnchorPoint = Vector2.new(0.5, 0.5)  -- Center anchor
-    BackgroundImage.Position = UDim2.new(0.6, 0, 0.5, 0)  -- IMPROVED: 60% ke kanan (sedikit offset)
+    BackgroundImage.Position = UDim2.new(0.55, 0, 0.5, 0)  -- IMPROVED: 60% ke kanan (sedikit offset)
     BackgroundImage.Size = UDim2.new(0.8, 0, 0.8, 0)  -- IMPROVED: 80% size agar proporsional
     BackgroundImage.ZIndex = 0
 
     MainStroke.Thickness = 3
-    MainStroke.Color = Color3.fromRGB(220, 50, 80)  -- FIXED: Modern bright red!
+    MainStroke.Color = Color3.fromRGB(120, 10, 30)  -- FIXED: Modern bright red!
     MainStroke.Transparency = 0
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
@@ -726,7 +726,7 @@ function ZuperMing:Window(GuiConfig)
     local TabSeparator = Instance.new("Frame")
     TabSeparator.Name = "TabSeparator"
     TabSeparator.Parent = Main
-    TabSeparator.BackgroundColor3 = Color3.fromRGB(220, 50, 80)  -- FIXED: Modern bright red!
+    TabSeparator.BackgroundColor3 = Color3.fromRGB(120, 10, 30)  -- FIXED: Modern bright red!
     TabSeparator.BorderSizePixel = 0
     TabSeparator.Position = UDim2.new(0, GuiConfig["Tab Width"] + 16, 0, 38)  -- IMPROVED: +16 untuk rapat ke kanan (was +9)
     TabSeparator.Size = UDim2.new(0, 2, 1, -38)  -- IMPROVED: Full height dari Top ke bottom
@@ -735,7 +735,7 @@ function ZuperMing:Window(GuiConfig)
 
     -- IMPROVED: DecideFrame sebagai garis horizontal MERAH di bawah title
     DecideFrame.AnchorPoint = Vector2.new(0.5, 0)
-    DecideFrame.BackgroundColor3 = Color3.fromRGB(220, 50, 80)  -- FIXED: Modern bright red!
+    DecideFrame.BackgroundColor3 = Color3.fromRGB(120, 10, 30)  -- FIXED: Modern bright red!
     DecideFrame.BackgroundTransparency = 0  -- IMPROVED: Fully visible
     DecideFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
     DecideFrame.BorderSizePixel = 0
@@ -1223,7 +1223,7 @@ function ZuperMing:Window(GuiConfig)
         ScrolLayers.Active = true
         ScrolLayers.LayoutOrder = CountTab
         ScrolLayers.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        ScrolLayers.BackgroundTransparency = 0.9990000128746033
+        ScrolLayers.BackgroundTransparency = 1
         ScrolLayers.BorderColor3 = Color3.fromRGB(0, 0, 0)
         ScrolLayers.BorderSizePixel = 0
         ScrolLayers.Size = UDim2.new(1, 0, 1, 0)
@@ -1259,14 +1259,14 @@ function ZuperMing:Window(GuiConfig)
         local TabBorderStroke = Instance.new("UIStroke")
         TabBorderStroke.Name = "TabBorder"
         TabBorderStroke.Thickness = 1.5  -- FIXED: Thinner, more modern
-        TabBorderStroke.Transparency = 0.2  -- FIXED: Slightly transparent for softer look
+        TabBorderStroke.Transparency = 1 -- FIXED: Slightly transparent for softer look
         TabBorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         TabBorderStroke.Parent = Tab
         
         -- FIXED: Modern gradient - Merah modern → Biru cerah (NO DARK COLORS!)
         local TabBorderGradient = Instance.new("UIGradient")
         TabBorderGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 50, 80)),    -- FIXED: Bright modern red
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 10, 30)),    -- FIXED: Bright modern red
             ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 160, 255))   -- FIXED: Bright modern blue
         })
         TabBorderGradient.Rotation = 90  -- Vertical gradient
@@ -1313,12 +1313,13 @@ function ZuperMing:Window(GuiConfig)
         if CountTab == 0 then
             LayersPageLayout:JumpToIndex(0)
             NameTab.Text = TabConfig.Name
+            NameTab.Position = UDim2.new(0, 10, 0, 0)
             local ChooseFrame = Instance.new("Frame");
             ChooseFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Base untuk gradient
             ChooseFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
             ChooseFrame.BorderSizePixel = 0
-            ChooseFrame.Position = UDim2.new(0, 2, 0, 9)
-            ChooseFrame.Size = UDim2.new(0, 1, 0, 12)
+            ChooseFrame.Position = UDim2.new(0, 2, 0, 4)
+            ChooseFrame.Size = UDim2.new(0, 3, 0, 20)
             ChooseFrame.Name = "ChooseFrame"
             ChooseFrame.Parent = Tab
             
@@ -1332,7 +1333,7 @@ function ZuperMing:Window(GuiConfig)
             TabGradient.Parent = ChooseFrame
 
             UIStroke2.Color = GuiConfig.Color
-            UIStroke2.Thickness = 1.600000023841858
+            UIStroke2.Thickness = 0
             UIStroke2.Parent = ChooseFrame
 
             UICorner4.Parent = ChooseFrame
@@ -1375,7 +1376,7 @@ function ZuperMing:Window(GuiConfig)
                 TweenService:Create(
                     FrameChoose,
                     TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-                    { Position = UDim2.new(0, 2, 0, 9 + (33 * Tab.LayoutOrder)) }
+                    { Position = UDim2.new(0, 2, 0, 4 + (33 * Tab.LayoutOrder)) }
                 ):Play()
                 LayersPageLayout:JumpToIndex(Tab.LayoutOrder)
                 task.wait(0.05)
@@ -1383,13 +1384,13 @@ function ZuperMing:Window(GuiConfig)
                 TweenService:Create(
                     FrameChoose,
                     TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-                    { Size = UDim2.new(0, 1, 0, 20) }
+                    { Size = UDim2.new(0, 1, 0, 2) }
                 ):Play()
                 task.wait(0.2)
                 TweenService:Create(
                     FrameChoose,
                     TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-                    { Size = UDim2.new(0, 1, 0, 12) }
+                    { Size = UDim2.new(0, 3, 0, 20) }
                 ):Play()
             end
         end)
