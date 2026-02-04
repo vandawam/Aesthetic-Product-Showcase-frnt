@@ -1404,6 +1404,7 @@ function ZuperMing:Window(GuiConfig)
         local Sections = {}
         local CountSection = 0
         function Sections:AddSection(Title, AlwaysOpen)
+            print("Adding Section: " .. tostring(AlwaysOpen))
             local Title = Title or "Title"
             -- Default open (true) tapi masih bisa toggle kecuali AlwaysOpen explicitly true
             local Section = Instance.new("Frame");
