@@ -64,16 +64,16 @@ function LoadConfigElements()
 end
 
 local Icons = {
-    info      = "rbxassetid://10723415903", 
-    main      = "rbxassetid://10709797725", 
-    auto      = "rbxassetid://10734923214", 
-    shop      = "rbxassetid://10734952479", 
+    info          = "rbxassetid://10723415903", 
+    main          = "rbxassetid://10723407389", 
+    auto          = "rbxassetid://10734923214", 
+    shop          = "rbxassetid://10734952479", 
     teleport      = "rbxassetid://10734886004", 
-    event      = "rbxassetid://10709789505", 
-    webhook      = "rbxassetid://10709775560", 
-    peformance      = "rbxassetid://10734963400", 
-    misc      = "rbxassetid://10734972862", 
-    config      = "rbxassetid://10734950309", 
+    event         = "rbxassetid://10709789505", 
+    webhook       = "rbxassetid://10709775560", 
+    peformance    = "rbxassetid://10734963400", 
+    misc          = "rbxassetid://10734972862", 
+    config        = "rbxassetid://10734950309", 
 }
 
 local UserInputService = game:GetService("UserInputService")
