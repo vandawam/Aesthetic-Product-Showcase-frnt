@@ -64,41 +64,74 @@ function LoadConfigElements()
 end
 
 local Icons = {
-    home      = "rbxassetid://7733960981", -- ✅ Icon Home Ditambahkan
-    player    = "rbxassetid://12120698352",
-    web       = "rbxassetid://137601480983962",
-    bag       = "rbxassetid://8601111810",
-    shop      = "rbxassetid://4985385964",
-    cart      = "rbxassetid://128874923961846",
-    plug      = "rbxassetid://137601480983962",
-    settings  = "rbxassetid://70386228443175",
-    loop      = "rbxassetid://122032243989747",
-    gps       = "rbxassetid://17824309485",
-    compas    = "rbxassetid://125300760963399",
-    gamepad   = "rbxassetid://84173963561612",
-    boss      = "rbxassetid://13132186360",
-    scroll    = "rbxassetid://114127804740858",
-    menu      = "rbxassetid://6340513838",
-    crosshair = "rbxassetid://12614416478",
-    user      = "rbxassetid://108483430622128",
-    stat      = "rbxassetid://12094445329",
-    eyes      = "rbxassetid://14321059114",
-    sword     = "rbxassetid://82472368671405",
-    discord   = "rbxassetid://94434236999817",
-    star      = "rbxassetid://107005941750079",
-    skeleton  = "rbxassetid://17313330026",
-    payment   = "rbxassetid://18747025078",
-    scan      = "rbxassetid://109869955247116",
-    alert     = "rbxassetid://73186275216515",
-    question  = "rbxassetid://17510196486",
-    idea      = "rbxassetid://16833255748",
-    strom     = "rbxassetid://13321880293",
-    water     = "rbxassetid://100076212630732",
-    dcs       = "rbxassetid://15310731934",
-    start     = "rbxassetid://108886429866687",
-    next      = "rbxassetid://12662718374",
-    rod       = "rbxassetid://103247953194129",
-    fish      = "rbxassetid://97167558235554",
+    -- [[ Navigation & General ]]
+    home        = "rbxassetid://7733960981",
+    dashboard   = "rbxassetid://7733964808",
+    menu        = "rbxassetid://7733920644",
+    settings    = "rbxassetid://7734053495",
+    search      = "rbxassetid://7734052335",
+    info        = "rbxassetid://7733964719",
+    warning     = "rbxassetid://7733658504",
+    error       = "rbxassetid://7733654760",
+    check       = "rbxassetid://7733715400",
+    close       = "rbxassetid://7733798747",
+    add         = "rbxassetid://7733765398",
+    minus       = "rbxassetid://7733994503",
+    arrow_left  = "rbxassetid://7733673722",
+    arrow_right = "rbxassetid://7733674319",
+
+    -- [[ Player & Social ]]
+    player      = "rbxassetid://7734068321",
+    users       = "rbxassetid://7734091286",
+    profile     = "rbxassetid://7734068321",
+    discord     = "rbxassetid://94434236999817", -- Logo Discord
+    chat        = "rbxassetid://7733737088",
+    heart       = "rbxassetid://7733955311",
+    skull       = "rbxassetid://7734076392", -- Bagus untuk Kill Aura/Combat
+
+    -- [[ Items, Shop & Economy ]]
+    shop        = "rbxassetid://7734056608",
+    cart        = "rbxassetid://7734056411",
+    bag         = "rbxassetid://7733696803",
+    gift        = "rbxassetid://7733939524",
+    wallet      = "rbxassetid://7734103136",
+    diamond     = "rbxassetid://7733790382",
+    coin        = "rbxassetid://7733802923",
+    tag         = "rbxassetid://7734084284", -- Bagus untuk Price/Label
+
+    -- [[ Combat & Weapons ]]
+    sword       = "rbxassetid://7734089852",
+    shield      = "rbxassetid://7734053075",
+    target      = "rbxassetid://7734085440", -- Aimbot
+    crosshair   = "rbxassetid://7733799901",
+    bomb        = "rbxassetid://7733703357",
+    fire        = "rbxassetid://7733917120",
+    lightning   = "rbxassetid://7734110600",
+
+    -- [[ Farming & Tools ]]
+    hammer      = "rbxassetid://7733953530",
+    axe         = "rbxassetid://7733692043",
+    pickaxe     = "rbxassetid://7733953530", -- Bisa pakai hammer atau cari spesifik
+    wrench      = "rbxassetid://7734112396",
+    fish        = "rbxassetid://7733924046", -- Ikan/Fishing
+    tree        = "rbxassetid://7734090623", -- Wood/Nature
+    map         = "rbxassetid://7733991677",
+    compass     = "rbxassetid://7733804246",
+    key         = "rbxassetid://7733970505",
+    lock        = "rbxassetid://7733980183",
+    unlock      = "rbxassetid://7734090883",
+
+    -- [[ Development & Scripting ]]
+    code        = "rbxassetid://7733799682",
+    file        = "rbxassetid://7733916394",
+    folder      = "rbxassetid://7733918070",
+    copy        = "rbxassetid://7733805963",
+    save        = "rbxassetid://7734050296",
+    download    = "rbxassetid://7733819879",
+    upload      = "rbxassetid://7734090284",
+    play        = "rbxassetid://7734042262",
+    pause       = "rbxassetid://7734032962",
+    bug         = "rbxassetid://7733714276", -- Debugging
 }
 
 local UserInputService = game:GetService("UserInputService")
