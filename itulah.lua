@@ -1,5 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local TextService = game:GetService("TextService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
 
 local ConfigPath = "ZuperMing/Config/" 
 
@@ -271,6 +273,8 @@ function CircleClick(Button, X, Y)
 end
 
 local ZuperMing = {}
+
+
 function ZuperMing:MakeNotify(NotifyConfig)
     local NotifyConfig = NotifyConfig or {}
     NotifyConfig.Title = NotifyConfig.Title or "ZuperMing"
@@ -283,7 +287,7 @@ function ZuperMing:MakeNotify(NotifyConfig)
     local NotifyFunction = {}
     
     spawn(function()
-        -- [[ SETUP GUI UTAMA ]]
+        -- [[ 1. SETUP CONTAINER ]]
         if not CoreGui:FindFirstChild("NotifyGui") then
             local NotifyGui = Instance.new("ScreenGui");
             NotifyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -297,12 +301,10 @@ function ZuperMing:MakeNotify(NotifyConfig)
             NotifyLayout.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             NotifyLayout.BackgroundTransparency = 1
             NotifyLayout.Position = UDim2.new(1, -30, 1, -30)
-            -- UBAH DISINI: Memperlebar container dari 320 menjadi 350
-            NotifyLayout.Size = UDim2.new(0, 350, 1, 0) 
+            NotifyLayout.Size = UDim2.new(0, 350, 1, 0)
             NotifyLayout.Name = "NotifyLayout"
             NotifyLayout.Parent = CoreGui.NotifyGui
             
-            -- Logic Auto-Sort saat notif dihapus
             local Count = 0
             CoreGui.NotifyGui.NotifyLayout.ChildRemoved:Connect(function()
                 Count = 0
@@ -317,145 +319,139 @@ function ZuperMing:MakeNotify(NotifyConfig)
             end)
         end
 
-        -- Hitung posisi tumpukan notif
         local NotifyPosHeigh = 0
         for i, v in CoreGui.NotifyGui.NotifyLayout:GetChildren() do
             NotifyPosHeigh = -(v.Position.Y.Offset) + v.Size.Y.Offset + 12
         end
 
-        -- [[ OBJECT CREATION ]]
-        local NotifyFrame = Instance.new("Frame");
-        local NotifyFrameReal = Instance.new("Frame");
-        local UICorner = Instance.new("UICorner");
-        local DropShadowHolder = Instance.new("Frame");
-        local Top = Instance.new("Frame");
-        local TextLabel = Instance.new("TextLabel"); -- Title
-        local UICorner1 = Instance.new("UICorner");
-        local TextLabel1 = Instance.new("TextLabel"); -- Description
-        local Close = Instance.new("TextButton");
-        local ImageLabel = Instance.new("ImageLabel");
-        local TextLabel2 = Instance.new("TextLabel"); -- Content
-
-        -- [[ SETUP VARIABEL UKURAN ]]
-        local LayoutWidth = CoreGui.NotifyGui.NotifyLayout.AbsoluteSize.X
-        local ContentPadding = 20 -- Kiri 10 + Kanan 10
-        local MaxTextWidth = LayoutWidth - ContentPadding
+        -- [[ 2. PERBAIKAN LOGIKA ]]
+        -- Lebar Container Asli = 350
+        -- Padding Kiri+Kanan = 20
+        -- Lebar Area Teks Asli = 330
         
-        -- HITUNG TINGGI TEKS MENGGUNAKAN TEXTSERVICE
-        -- Ini kuncinya agar tidak tembus
+        -- TRIK: Kita hitung seolah-olah lebarnya cuma 280 (Lebih sempit 50px).
+        -- Ini memaksa kalkulator menganggap teks panjang itu "GA MUAT" dan butuh 2 baris.
+        -- Hasilnya: Wadah background akan disiapkan untuk 2 baris.
+        local CalculationWidth = 280 
+        
         local ContentBounds = TextService:GetTextSize(
             NotifyConfig.Content,
-            15, -- Ukuran Font TextLabel2
+            15, 
             Enum.Font.GothamBold,
-            Vector2.new(MaxTextWidth, 9999) -- Batas lebar dan tinggi tak terbatas
+            Vector2.new(CalculationWidth, 9999) 
         )
         
         local TextHeight = ContentBounds.Y
         local HeaderHeight = 36
         local BottomPadding = 15
         local TotalFrameHeight = HeaderHeight + TextHeight + BottomPadding
+        
+        if TotalFrameHeight < 65 then TotalFrameHeight = 65 end
 
-        -- [[ PROPERTI UI ]]
-        NotifyFrame.BackgroundColor3 = Color3.fromRGB(29, 30, 35)
-        NotifyFrame.BackgroundTransparency = 1
-        NotifyFrame.BorderSizePixel = 0
-        -- UBAH DISINI: Tinggi frame dinamis mengikuti konten
-        NotifyFrame.Size = UDim2.new(1, 0, 0, TotalFrameHeight)
+        -- [[ 3. UI CREATION ]]
+        local NotifyFrame = Instance.new("Frame");
+        local NotifyFrameReal = Instance.new("Frame");
+        local UICorner = Instance.new("UICorner");
+        local Top = Instance.new("Frame");
+        local TextLabel = Instance.new("TextLabel"); 
+        local TextLabel1 = Instance.new("TextLabel"); 
+        local Close = Instance.new("TextButton");
+        local ImageLabel = Instance.new("ImageLabel");
+        local TextLabel2 = Instance.new("TextLabel"); 
+
         NotifyFrame.Name = "NotifyFrame"
+        NotifyFrame.BackgroundTransparency = 1
+        NotifyFrame.Size = UDim2.new(1, 0, 0, TotalFrameHeight)
         NotifyFrame.Parent = CoreGui.NotifyGui.NotifyLayout
         NotifyFrame.AnchorPoint = Vector2.new(0, 1)
         NotifyFrame.Position = UDim2.new(0, 0, 1, -(NotifyPosHeigh))
 
-        NotifyFrameReal.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        NotifyFrameReal.BorderSizePixel = 0
-        NotifyFrameReal.Position = UDim2.new(0, 400, 0, 0) -- Mulai dari luar layar kanan
-        NotifyFrameReal.Size = UDim2.new(1, 0, 1, 0)
         NotifyFrameReal.Name = "NotifyFrameReal"
+        NotifyFrameReal.BackgroundColor3 = Color3.fromRGB(29, 30, 35)
+        NotifyFrameReal.BorderSizePixel = 0
+        NotifyFrameReal.Position = UDim2.new(0, 400, 0, 0)
+        NotifyFrameReal.Size = UDim2.new(1, 0, 1, 0)
         NotifyFrameReal.Parent = NotifyFrame
 
         UICorner.Parent = NotifyFrameReal
         UICorner.CornerRadius = UDim.new(0, 8)
 
-        -- Top Header
-        Top.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Top.BackgroundTransparency = 0.99
-        Top.Size = UDim2.new(1, 0, 0, HeaderHeight)
         Top.Name = "Top"
+        Top.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Top.BackgroundTransparency = 1
+        Top.Size = UDim2.new(1, 0, 0, HeaderHeight)
         Top.Parent = NotifyFrameReal
 
-        -- Title
         TextLabel.Font = Enum.Font.GothamBold
         TextLabel.Text = NotifyConfig.Title
         TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
         TextLabel.TextSize = 14
         TextLabel.TextXAlignment = Enum.TextXAlignment.Left
         TextLabel.BackgroundTransparency = 1
-        TextLabel.Size = UDim2.new(0, 0, 1, 0) -- Auto width nanti
         TextLabel.AutomaticSize = Enum.AutomaticSize.X
-        TextLabel.Parent = Top
+        TextLabel.Size = UDim2.new(0, 0, 1, 0)
         TextLabel.Position = UDim2.new(0, 10, 0, 0)
+        TextLabel.Parent = Top
 
-        -- Description
         TextLabel1.Font = Enum.Font.GothamBold
         TextLabel1.Text = NotifyConfig.Description
         TextLabel1.TextColor3 = NotifyConfig.Color
         TextLabel1.TextSize = 14
         TextLabel1.TextXAlignment = Enum.TextXAlignment.Left
         TextLabel1.BackgroundTransparency = 1
-        TextLabel1.Size = UDim2.new(0, 0, 1, 0)
         TextLabel1.AutomaticSize = Enum.AutomaticSize.X
-        -- Posisikan di sebelah Title
-        TextLabel1.Position = UDim2.new(0, 10, 0, 0) 
-        -- Koreksi posisi description agar disebelah title (menggunakan task.defer untuk akurasi)
+        TextLabel1.Size = UDim2.new(0, 0, 1, 0)
+        TextLabel1.Parent = Top
+        
         task.defer(function()
              TextLabel1.Position = UDim2.new(0, TextLabel.AbsoluteSize.X + 15, 0, 0)
         end)
-        TextLabel1.Parent = Top
 
-        -- Close Button
+        Close.Name = "Close"
         Close.Text = ""
-        Close.AnchorPoint = Vector2.new(1, 0.5)
         Close.BackgroundTransparency = 1
+        Close.AnchorPoint = Vector2.new(1, 0.5)
         Close.Position = UDim2.new(1, -5, 0.5, 0)
         Close.Size = UDim2.new(0, 25, 0, 25)
-        Close.Name = "Close"
         Close.Parent = Top
 
         ImageLabel.Image = "rbxassetid://9886659671"
-        ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
         ImageLabel.BackgroundTransparency = 1
+        ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
         ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
         ImageLabel.Size = UDim2.new(0.6, 0, 0.6, 0)
         ImageLabel.Parent = Close
 
-        -- [[ CONTENT LABEL (Isi Pesan) ]]
+        -- [[ TEXT CONTENT UTAMA ]]
+        TextLabel2.Name = "Content"
         TextLabel2.Font = Enum.Font.GothamBold
-        TextLabel2.TextColor3 = Color3.fromRGB(150, 150, 150)
-        TextLabel2.TextSize = 15
         TextLabel2.Text = NotifyConfig.Content
+        TextLabel2.TextColor3 = Color3.fromRGB(180, 180, 180)
+        TextLabel2.TextSize = 15
+        TextLabel2.BackgroundTransparency = 1
         TextLabel2.TextXAlignment = Enum.TextXAlignment.Left
         TextLabel2.TextYAlignment = Enum.TextYAlignment.Top
-        TextLabel2.BackgroundTransparency = 1
-        TextLabel2.Position = UDim2.new(0, 10, 0, 36) -- Dibawah Header
-        TextLabel2.Parent = NotifyFrameReal
-        
-        -- UBAH DISINI: Aktifkan Wrapping dan atur ukuran sesuai kalkulasi
         TextLabel2.TextWrapped = true
-        TextLabel2.Size = UDim2.new(1, -20, 0, TextHeight)
+        
+        -- [SOLUSI UTAMA] Aktifkan AutomaticSize Y
+        -- Ini membuat TextLabel memanjang sendiri kebawah jika teksnya ternyata ga muat
+        -- meskipun kita sudah hitung manual tadi.
+        TextLabel2.AutomaticSize = Enum.AutomaticSize.Y 
+        
+        TextLabel2.Position = UDim2.new(0, 10, 0, HeaderHeight)
+        -- Size Y kita set 0, biar AutomaticSize yang ngatur tingginya
+        TextLabel2.Size = UDim2.new(1, -20, 0, 0) 
+        TextLabel2.Parent = NotifyFrameReal
 
-        -- [[ ANIMASI & LOGIC TUTUP ]]
         local waitbruh = false
         function NotifyFunction:Close()
             if waitbruh then return false end
             waitbruh = true
-            
-            -- Animasi Keluar (Geser ke Kanan)
             TweenService:Create(
                 NotifyFrameReal,
                 TweenInfo.new(tonumber(NotifyConfig.Time), Enum.EasingStyle.Back, Enum.EasingDirection.In),
                 { Position = UDim2.new(0, 400, 0, 0) }
             ):Play()
-            
             task.wait(tonumber(NotifyConfig.Time) / 1.2)
             NotifyFrame:Destroy()
         end
@@ -464,7 +460,6 @@ function ZuperMing:MakeNotify(NotifyConfig)
             NotifyFunction:Close()
         end)
 
-        -- Animasi Masuk (Dari Kanan ke Tengah)
         TweenService:Create(
             NotifyFrameReal,
             TweenInfo.new(tonumber(NotifyConfig.Time), Enum.EasingStyle.Back, Enum.EasingDirection.Out),
@@ -2964,4 +2959,14 @@ return ZuperMing
 -- Window:AddTab({
 --     Name = "player",
 --     Icon = "player",
+-- }):AddSection("hello"):AddButton({
+--     Title = "Copy Link Discord",
+--     Callback = function()
+--         ZuperMing:MakeNotify({
+--             Description = "Discord Link Copied!",
+--             Content = "abcdefghijklmnopqrstuvwyzabcdefghijklmn",
+--             Duration = 5
+--         })
+--         setclipboard("https://discord.gg/zuperminghub")
+--     end
 -- })
