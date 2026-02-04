@@ -1590,7 +1590,7 @@ function ZuperMing:Window(GuiConfig)
                 FeatureFrame:Destroy()
                 OpenSection = true
                 UpdateSizeSection()
-            elseif AlwaysOpen == false then
+            elseif AlwaysOpen == "close" then
                 OpenSection = false -- Kalo explicitly false, mulai closed
             else
                 OpenSection = true -- Default: mulai open tapi bisa toggle
@@ -1634,7 +1634,7 @@ function ZuperMing:Window(GuiConfig)
                 end)
             end
 
-            if AlwaysOpen == true or AlwaysOpen == false then
+            if AlwaysOpen == true or AlwaysOpen == 'close' then
                 OpenSection = true
                 local SectionSizeYWitdh = 38
                 for _, v in SectionAdd:GetChildren() do
