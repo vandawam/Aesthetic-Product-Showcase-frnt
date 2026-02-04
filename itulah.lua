@@ -1404,7 +1404,6 @@ function ZuperMing:Window(GuiConfig)
         local Sections = {}
         local CountSection = 0
         function Sections:AddSection(Title, AlwaysOpen)
-            print("Adding Section: " .. tostring(AlwaysOpen))
             local Title = Title or "Title"
             -- Default open (true) tapi masih bisa toggle kecuali AlwaysOpen explicitly true
             local Section = Instance.new("Frame");
@@ -1591,7 +1590,7 @@ function ZuperMing:Window(GuiConfig)
                 FeatureFrame:Destroy()
                 OpenSection = true
                 UpdateSizeSection()
-            elseif AlwaysOpen == "close" then
+            elseif AlwaysOpen == false then
                 OpenSection = false -- Kalo explicitly false, mulai closed
             else
                 OpenSection = true -- Default: mulai open tapi bisa toggle
@@ -1635,7 +1634,7 @@ function ZuperMing:Window(GuiConfig)
                 end)
             end
 
-            if AlwaysOpen == true or AlwaysOpen == 'close' then
+            if AlwaysOpen == true then
                 OpenSection = true
                 local SectionSizeYWitdh = 38
                 for _, v in SectionAdd:GetChildren() do
@@ -2960,7 +2959,7 @@ return ZuperMing
 -- Window:AddTab({
 --     Name = "player",
 --     Icon = "player",
--- }):AddSection("hello"):AddButton({
+-- }):AddSection("hello", 'close'):AddButton({
 --     Title = "Copy Link Discord",
 --     Callback = function()
 --         ZuperMing:MakeNotify({
