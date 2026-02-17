@@ -2630,6 +2630,8 @@ function ZuperMing:Window(GuiConfig)
                 return InputFunc
             end
             
+            local TextService = game:GetService("TextService")
+
             function Items:AddDropdown(DropdownConfig)
                 local DropdownConfig = DropdownConfig or {}
                 DropdownConfig.Title = DropdownConfig.Title or "Title"
@@ -2708,15 +2710,38 @@ function ZuperMing:Window(GuiConfig)
                 UICorner11.CornerRadius = UDim.new(0, 4)
                 UICorner11.Parent = SelectOptionsFrame
 
+                -- [[ BAGIAN PERBAIKAN: AUTO WIDTH + MEPET KANAN ]]
                 DropdownButton.Activated:Connect(function()
                     if not MoreBlur.Visible then
                         MoreBlur.Visible = true
                         DropPageLayout:JumpToIndex(SelectOptionsFrame.LayoutOrder)
                         TweenService:Create(MoreBlur, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
-                        TweenService:Create(DropdownSelect, TweenInfo.new(0.3), { Position = UDim2.new(1, -11, 0.5, 0) })
-                            :Play()
+                        
+                        -- 1. Hitung lebar text terpanjang
+                        local maxWidth = 0
+                        for _, v in ipairs(DropdownConfig.Options) do
+                            local text = (type(v) == "table" and v.Label) or tostring(v)
+                            local size = TextService:GetTextSize(text, 14, Enum.Font.GothamBold, Vector2.new(math.huge, 30))
+                            if size.X > maxWidth then maxWidth = size.X end
+                        end
+                        
+                        -- 2. Tentukan lebar baru (Text + Padding 60px)
+                        local newWidth = maxWidth + 60
+                        if newWidth < 150 then newWidth = 150 end -- Minimal lebar
+                        
+                        -- 3. Set Anchor Point ke KANAN (1, 0.5) agar melebar ke kiri
+                        DropdownSelect.AnchorPoint = Vector2.new(1, 0.5)
+                        
+                        -- 4. Update Ukuran (Pertahankan tinggi Y asli)
+                        local currentYScale = DropdownSelect.Size.Y.Scale
+                        local currentYOffset = DropdownSelect.Size.Y.Offset
+                        DropdownSelect.Size = UDim2.new(0, newWidth, currentYScale, currentYOffset)
+                        
+                        -- 5. Tween ke posisi MEPET KANAN (jarak 11px dari kanan)
+                        TweenService:Create(DropdownSelect, TweenInfo.new(0.3), { Position = UDim2.new(1, -11, 0.5, 0) }):Play()
                     end
                 end)
+                -- [[ AKHIR PERBAIKAN ]]
 
                 OptionSelecting.Font = Enum.Font.GothamBold
                 OptionSelecting.Text = DropdownConfig.Multi and "Select Options" or "Select Option"
