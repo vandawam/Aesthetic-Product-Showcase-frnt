@@ -2630,185 +2630,330 @@ function ZuperMing:Window(GuiConfig)
                 return InputFunc
             end
             
-            local TextService = game:GetService("TextService")
-
             function Items:AddDropdown(DropdownConfig)
                 local DropdownConfig = DropdownConfig or {}
-                DropdownConfig.Title = DropdownConfig.Title or "Dropdown"
+                DropdownConfig.Title = DropdownConfig.Title or "Title"
+                DropdownConfig.Content = DropdownConfig.Content or ""
+                DropdownConfig.Multi = DropdownConfig.Multi or false
                 DropdownConfig.Options = DropdownConfig.Options or {}
-                
-                local DropdownFunc = { Value = DropdownConfig.Default, Options = DropdownConfig.Options }
+                DropdownConfig.Default = DropdownConfig.Default or (DropdownConfig.Multi and {} or nil)
+                DropdownConfig.Callback = DropdownConfig.Callback or function() end
+
                 local configKey = "Dropdown_" .. DropdownConfig.Title
-                
+                if ConfigData[configKey] ~= nil then
+                    DropdownConfig.Default = ConfigData[configKey]
+                end
+
+                local DropdownFunc = { Value = DropdownConfig.Default, Options = DropdownConfig.Options }
+
                 local Dropdown = Instance.new("Frame")
+                local DropdownButton = Instance.new("TextButton")
+                local UICorner10 = Instance.new("UICorner")
+                local DropdownTitle = Instance.new("TextLabel")
+                local DropdownContent = Instance.new("TextLabel")
+                local SelectOptionsFrame = Instance.new("Frame")
+                local UICorner11 = Instance.new("UICorner")
+                local OptionSelecting = Instance.new("TextLabel")
+                local OptionImg = Instance.new("ImageLabel")
+
+                Dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 Dropdown.BackgroundTransparency = 0.935
-                Dropdown.BackgroundColor3 = Color3.fromRGB(255,255,255)
-                Dropdown.Size = UDim2.new(1,0,0,46)
+                Dropdown.BorderSizePixel = 0
                 Dropdown.LayoutOrder = CountItem
+                Dropdown.Size = UDim2.new(1, 0, 0, 46)
+                Dropdown.Name = "Dropdown"
                 Dropdown.Parent = SectionAdd
-                Instance.new("UICorner", Dropdown).CornerRadius = UDim.new(0,4)
-                
-                local Title = Instance.new("TextLabel", Dropdown)
-                Title.Text = DropdownConfig.Title
-                Title.Font = Enum.Font.GothamBold
-                Title.TextColor3 = Color3.new(1,1,1)
-                Title.TextSize = 16
-                Title.BackgroundTransparency = 1
-                Title.Position = UDim2.new(0,10,0,0)
-                Title.Size = UDim2.new(1,-20,1,0)
-                Title.TextXAlignment = Enum.TextXAlignment.Left
-                
-                local SelectOptionsFrame = Instance.new("Frame", Dropdown)
+
+                DropdownButton.Text = ""
+                DropdownButton.BackgroundTransparency = 1
+                DropdownButton.Size = UDim2.new(1, 0, 1, 0)
+                DropdownButton.Name = "ToggleButton"
+                DropdownButton.Parent = Dropdown
+
+                UICorner10.CornerRadius = UDim.new(0, 4)
+                UICorner10.Parent = Dropdown
+
+                DropdownTitle.Font = Enum.Font.GothamBold
+                DropdownTitle.Text = DropdownConfig.Title
+                DropdownTitle.TextColor3 = Color3.fromRGB(230, 230, 230)
+                DropdownTitle.TextSize = 15
+                DropdownTitle.TextXAlignment = Enum.TextXAlignment.Left
+                DropdownTitle.BackgroundTransparency = 1
+                DropdownTitle.Position = UDim2.new(0, 10, 0, 10)
+                DropdownTitle.Size = UDim2.new(1, -180, 0, 13)
+                DropdownTitle.Name = "DropdownTitle"
+                DropdownTitle.Parent = Dropdown
+
+                DropdownContent.Font = Enum.Font.GothamBold
+                DropdownContent.Text = DropdownConfig.Content
+                DropdownContent.TextColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownContent.TextSize = 14
+                DropdownContent.TextTransparency = 0.6
+                DropdownContent.TextWrapped = true
+                DropdownContent.TextXAlignment = Enum.TextXAlignment.Left
+                DropdownContent.BackgroundTransparency = 1
+                DropdownContent.Position = UDim2.new(0, 10, 0, 25)
+                DropdownContent.Size = UDim2.new(1, -180, 0, 12)
+                DropdownContent.Name = "DropdownContent"
+                DropdownContent.Parent = Dropdown
+
                 SelectOptionsFrame.AnchorPoint = Vector2.new(1, 0.5)
                 SelectOptionsFrame.BackgroundTransparency = 0.95
-                SelectOptionsFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
                 SelectOptionsFrame.Position = UDim2.new(1, -7, 0.5, 0)
                 SelectOptionsFrame.Size = UDim2.new(0, 148, 0, 30)
-                Instance.new("UICorner", SelectOptionsFrame).CornerRadius = UDim.new(0, 4)
-                
-                local OptionSelecting = Instance.new("TextLabel", SelectOptionsFrame)
-                OptionSelecting.BackgroundTransparency = 1
-                OptionSelecting.Position = UDim2.new(0, 5, 0, 0)
-                OptionSelecting.Size = UDim2.new(1, -30, 1, 0)
-                OptionSelecting.Font = Enum.Font.GothamBold
-                OptionSelecting.Text = "Select..."
-                OptionSelecting.TextColor3 = Color3.new(1,1,1)
-                OptionSelecting.TextSize = 15
-                OptionSelecting.TextTransparency = 0.6
-                OptionSelecting.TextXAlignment = Enum.TextXAlignment.Left
-                
-                local OptionImg = Instance.new("ImageLabel", SelectOptionsFrame)
-                OptionImg.BackgroundTransparency = 1
-                OptionImg.Image = "rbxassetid://16851841101"
-                OptionImg.ImageColor3 = Color3.fromRGB(230, 230, 230)
-                OptionImg.Position = UDim2.new(1, -30, 0, 2)
-                OptionImg.Size = UDim2.new(0, 25, 0, 25)
-                
-                local Button = Instance.new("TextButton", Dropdown)
-                Button.Size = UDim2.new(1,0,1,0)
-                Button.BackgroundTransparency = 1
-                Button.Text = ""
-                
-                -- [[ DROPDOWN LOGIC ]] --
-                Button.MouseButton1Click:Connect(function()
+                SelectOptionsFrame.Name = "SelectOptionsFrame"
+                SelectOptionsFrame.LayoutOrder = CountDropdown
+                SelectOptionsFrame.Parent = Dropdown
+
+                UICorner11.CornerRadius = UDim.new(0, 4)
+                UICorner11.Parent = SelectOptionsFrame
+
+                DropdownButton.Activated:Connect(function()
                     if not MoreBlur.Visible then
                         MoreBlur.Visible = true
-                        DropPageLayout:JumpToIndex(1)
-                        TweenService:Create(MoreBlur, TweenInfo.new(0.3), {BackgroundTransparency = 0.8}):Play()
-                        
-                        -- [PERBAIKAN: AUTO WIDTH + MEPET KANAN] --------------------------------
-                        
-                        -- 1. Hitung Text Terpanjang
-                        local maxWidth = 0
-                        for _, opt in pairs(DropdownFunc.Options) do
-                            local textWidth = TextService:GetTextSize(tostring(opt), 15, Enum.Font.GothamBold, Vector2.new(math.huge, 30)).X
-                            if textWidth > maxWidth then
-                                maxWidth = textWidth
-                            end
-                        end
-                        
-                        -- 2. Tentukan Lebar Baru
-                        local newWidth = maxWidth + 60
-                        if newWidth < 160 then newWidth = 160 end
-                        
-                        -- 3. Set Anchor Point ke KANAN (1, 0.5)
-                        -- Ini kuncinya: Titik koordinat frame ada di sisi kanannya.
-                        DropdownSelect.AnchorPoint = Vector2.new(1, 0.5)
-                        
-                        -- 4. Update Ukuran (Pertahankan tinggi Y asli)
-                        local currentYScale = DropdownSelect.Size.Y.Scale
-                        local currentYOffset = DropdownSelect.Size.Y.Offset
-                        DropdownSelect.Size = UDim2.new(0, newWidth, currentYScale, currentYOffset)
-                        
-                        -- 5. Tween ke Posisi MEPET KANAN
-                        -- UDim2.new(1, -20, 0.5, 0) artinya:
-                        -- X = 100% layar dikurangi 20 pixel (Jarak aman dari kanan).
-                        local targetPos = UDim2.new(1, -20, 0.5, 0)
-                        
-                        TweenService:Create(DropdownSelect, TweenInfo.new(0.3), {Position = targetPos}):Play()
-                        
-                        -- [AKHIR PERBAIKAN] -----------------------------------------------------
-                        
-                        -- Populate list
-                        for _, v in pairs(ScrollSelect:GetChildren()) do
-                            if v:IsA("Frame") then v:Destroy() end
-                        end
-                        ScrollSelect.CanvasSize = UDim2.new(0,0,0,0)
-                        
-                        for _, opt in pairs(DropdownFunc.Options) do
-                            DropdownFunc:AddOption(opt)
-                        end
+                        DropPageLayout:JumpToIndex(SelectOptionsFrame.LayoutOrder)
+                        TweenService:Create(MoreBlur, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(DropdownSelect, TweenInfo.new(0.3), { Position = UDim2.new(1, -11, 0.5, 0) })
+                            :Play()
                     end
                 end)
-                
+
+                OptionSelecting.Font = Enum.Font.GothamBold
+                OptionSelecting.Text = DropdownConfig.Multi and "Select Options" or "Select Option"
+                OptionSelecting.TextColor3 = Color3.fromRGB(255, 255, 255)
+                OptionSelecting.TextSize = 14
+                OptionSelecting.TextTransparency = 0.6
+                OptionSelecting.TextXAlignment = Enum.TextXAlignment.Left
+                OptionSelecting.AnchorPoint = Vector2.new(0, 0.5)
+                OptionSelecting.BackgroundTransparency = 1
+                OptionSelecting.Position = UDim2.new(0, 5, 0.5, 0)
+                OptionSelecting.Size = UDim2.new(1, -30, 1, -8)
+                OptionSelecting.Name = "OptionSelecting"
+                OptionSelecting.Parent = SelectOptionsFrame
+
+                OptionImg.Image = "rbxassetid://16851841101"
+                OptionImg.ImageColor3 = Color3.fromRGB(230, 230, 230)
+                OptionImg.AnchorPoint = Vector2.new(1, 0.5)
+                OptionImg.BackgroundTransparency = 1
+                OptionImg.Position = UDim2.new(1, 0, 0.5, 0)
+                OptionImg.Size = UDim2.new(0, 25, 0, 25)
+                OptionImg.Name = "OptionImg"
+                OptionImg.Parent = SelectOptionsFrame
+
+                local DropdownContainer = Instance.new("Frame")
+                DropdownContainer.Size = UDim2.new(1, 0, 1, 0)
+                DropdownContainer.BackgroundTransparency = 1
+                DropdownContainer.Parent = DropdownFolder
+
+                local SearchBox = Instance.new("TextBox")
+                SearchBox.PlaceholderText = "Search"
+                SearchBox.Font = Enum.Font.Gotham
+                SearchBox.Text = ""
+                SearchBox.TextSize = 14
+                SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                SearchBox.BackgroundTransparency = 0.9
+                SearchBox.BorderSizePixel = 0
+                SearchBox.Size = UDim2.new(1, 0, 0, 25)
+                SearchBox.Position = UDim2.new(0, 0, 0, 0)
+                SearchBox.ClearTextOnFocus = false
+                SearchBox.Name = "SearchBox"
+                SearchBox.Parent = DropdownContainer
+
+                local ScrollSelect = Instance.new("ScrollingFrame")
+                ScrollSelect.Size = UDim2.new(1, 0, 1, -30)
+                ScrollSelect.Position = UDim2.new(0, 0, 0, 30)
+                ScrollSelect.ScrollBarImageTransparency = 1
+                ScrollSelect.BorderSizePixel = 0
+                ScrollSelect.BackgroundTransparency = 1
+                ScrollSelect.ScrollBarThickness = 0
+                ScrollSelect.CanvasSize = UDim2.new(0, 0, 0, 0)
+                ScrollSelect.Name = "ScrollSelect"
+                ScrollSelect.Parent = DropdownContainer
+
+                local UIListLayout4 = Instance.new("UIListLayout")
+                UIListLayout4.Padding = UDim.new(0, 3)
+                UIListLayout4.SortOrder = Enum.SortOrder.LayoutOrder
+                UIListLayout4.Parent = ScrollSelect
+
+                UIListLayout4:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                    ScrollSelect.CanvasSize = UDim2.new(0, 0, 0, UIListLayout4.AbsoluteContentSize.Y)
+                end)
+
+                SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+                    local query = string.lower(SearchBox.Text)
+                    for _, option in pairs(ScrollSelect:GetChildren()) do
+                        if option.Name == "Option" and option:FindFirstChild("OptionText") then
+                            local text = string.lower(option.OptionText.Text)
+                            option.Visible = query == "" or string.find(text, query, 1, true)
+                        end
+                    end
+                    ScrollSelect.CanvasSize = UDim2.new(0, 0, 0, UIListLayout4.AbsoluteContentSize.Y)
+                end)
+
+                local DropCount = 0
+
+                function DropdownFunc:Clear()
+                    for _, DropFrame in ScrollSelect:GetChildren() do
+                        if DropFrame.Name == "Option" then
+                            DropFrame:Destroy()
+                        end
+                    end
+                    DropdownFunc.Value = DropdownConfig.Multi and {} or nil
+                    DropdownFunc.Options = {}
+                    OptionSelecting.Text = DropdownConfig.Multi and "Select Options" or "Select Option"
+                    DropCount = 0
+                end
+
                 function DropdownFunc:AddOption(option)
-                    local label = tostring(option)
-                    local btnFrame = Instance.new("Frame", ScrollSelect)
-                    btnFrame.Size = UDim2.new(1,0,0,30)
-                    btnFrame.BackgroundTransparency = 1
-                    btnFrame.Name = "Option"
-                    
-                    local btnText = Instance.new("TextLabel", btnFrame)
-                    btnText.Name = "OptionText"
-                    btnText.Text = "  " .. label
-                    btnText.Size = UDim2.new(1,0,1,0)
-                    btnText.Font = Enum.Font.GothamBold
-                    btnText.TextSize = 15
-                    btnText.TextColor3 = Color3.new(1,1,1)
-                    btnText.BackgroundTransparency = 1
-                    btnText.TextXAlignment = Enum.TextXAlignment.Left
-                    
-                    local trigger = Instance.new("TextButton", btnFrame)
-                    trigger.Size = UDim2.new(1,0,1,0)
-                    trigger.BackgroundTransparency = 1
-                    trigger.Text = ""
-                    
-                    trigger.MouseButton1Click:Connect(function()
+                    local label, value
+                    if typeof(option) == "table" and option.Label and option.Value ~= nil then
+                        label = tostring(option.Label)
+                        value = option.Value
+                    else
+                        label = tostring(option)
+                        value = option
+                    end
+
+                    local Option = Instance.new("Frame")
+                    local OptionButton = Instance.new("TextButton")
+                    local OptionText = Instance.new("TextLabel")
+                    local ChooseFrame = Instance.new("Frame")
+                    local UIStroke15 = Instance.new("UIStroke")
+                    local UICorner38 = Instance.new("UICorner")
+                    local UICorner37 = Instance.new("UICorner")
+
+                    Option.BackgroundTransparency = 1
+                    Option.Size = UDim2.new(1, 0, 0, 30)
+                    Option.Name = "Option"
+                    Option.Parent = ScrollSelect
+
+                    UICorner37.CornerRadius = UDim.new(0, 3)
+                    UICorner37.Parent = Option
+
+                    OptionButton.BackgroundTransparency = 1
+                    OptionButton.Size = UDim2.new(1, 0, 1, 0)
+                    OptionButton.Text = ""
+                    OptionButton.Name = "OptionButton"
+                    OptionButton.Parent = Option
+
+                    OptionText.Font = Enum.Font.GothamBold
+                    OptionText.Text = label
+                    OptionText.TextSize = 15
+                    OptionText.TextColor3 = Color3.fromRGB(230, 230, 230)
+                    OptionText.Position = UDim2.new(0, 8, 0, 8)
+                    OptionText.Size = UDim2.new(1, -100, 0, 13)
+                    OptionText.BackgroundTransparency = 1
+                    OptionText.TextXAlignment = Enum.TextXAlignment.Left
+                    OptionText.Name = "OptionText"
+                    OptionText.Parent = Option
+
+                    Option:SetAttribute("RealValue", value)
+
+                    ChooseFrame.AnchorPoint = Vector2.new(0, 0.5)
+                    ChooseFrame.BackgroundColor3 = GuiConfig.Color
+                    ChooseFrame.Position = UDim2.new(0, 2, 0.5, 0)
+                    ChooseFrame.Size = UDim2.new(0, 0, 0, 0)
+                    ChooseFrame.Name = "ChooseFrame"
+                    ChooseFrame.Parent = Option
+
+                    UIStroke15.Color = GuiConfig.Color
+                    UIStroke15.Thickness = 1.6
+                    UIStroke15.Transparency = 0.999
+                    UIStroke15.Parent = ChooseFrame
+                    UICorner38.Parent = ChooseFrame
+
+                    OptionButton.Activated:Connect(function()
                         if DropdownConfig.Multi then
-                            if not table.find(DropdownFunc.Value, option) then
-                                table.insert(DropdownFunc.Value, option)
+                            if not table.find(DropdownFunc.Value, value) then
+                                table.insert(DropdownFunc.Value, value)
                             else
                                 for i, v in pairs(DropdownFunc.Value) do
-                                    if v == option then table.remove(DropdownFunc.Value, i) end
+                                    if v == value then
+                                        table.remove(DropdownFunc.Value, i)
+                                        break
+                                    end
                                 end
                             end
                         else
-                            DropdownFunc.Value = option
+                            DropdownFunc.Value = value
                         end
                         DropdownFunc:Set(DropdownFunc.Value)
                     end)
                 end
-                
+
                 function DropdownFunc:Set(Value)
                     if DropdownConfig.Multi then
                         DropdownFunc.Value = type(Value) == "table" and Value or {}
-                        OptionSelecting.Text = table.concat(DropdownFunc.Value, ", ")
-                        if #DropdownFunc.Value == 0 then OptionSelecting.Text = "Select Options" end
                     else
-                        DropdownFunc.Value = Value
-                        OptionSelecting.Text = tostring(Value)
+                        DropdownFunc.Value = (type(Value) == "table" and Value[1]) or Value
                     end
+
                     ConfigData[configKey] = DropdownFunc.Value
-                    if DropdownConfig.Callback then DropdownConfig.Callback(DropdownFunc.Value) end
-                end
-                
-                function DropdownFunc:SetValues(newList)
-                    DropdownFunc.Options = newList or {}
-                    DropdownFunc.Value = DropdownConfig.Multi and {} or nil
-                    OptionSelecting.Text = "Select..."
-                end
-                
-                function DropdownFunc:Clear()
-                    DropdownFunc.Options = {}
-                    DropdownFunc.Value = nil
-                    OptionSelecting.Text = "Select..."
+                    -- SaveConfig()
+
+                    local texts = {}
+                    for _, Drop in ScrollSelect:GetChildren() do
+                        if Drop.Name == "Option" and Drop:FindFirstChild("OptionText") then
+                            local v = Drop:GetAttribute("RealValue")
+                            local selected = DropdownConfig.Multi and table.find(DropdownFunc.Value, v) or
+                                DropdownFunc.Value == v
+
+                            if selected then
+                                TweenService:Create(Drop.ChooseFrame, TweenInfo.new(0.2),
+                                    { Size = UDim2.new(0, 1, 0, 12) }):Play()
+                                TweenService:Create(Drop.ChooseFrame.UIStroke, TweenInfo.new(0.2), { Transparency = 0 })
+                                    :Play()
+                                TweenService:Create(Drop, TweenInfo.new(0.2), { BackgroundTransparency = 0.935 }):Play()
+                                table.insert(texts, Drop.OptionText.Text)
+                            else
+                                TweenService:Create(Drop.ChooseFrame, TweenInfo.new(0.1),
+                                    { Size = UDim2.new(0, 0, 0, 0) }):Play()
+                                TweenService:Create(Drop.ChooseFrame.UIStroke, TweenInfo.new(0.1),
+                                    { Transparency = 0.999 }):Play()
+                                TweenService:Create(Drop, TweenInfo.new(0.1), { BackgroundTransparency = 0.999 }):Play()
+                            end
+                        end
+                    end
+
+                    OptionSelecting.Text = (#texts == 0)
+                        and (DropdownConfig.Multi and "Select Options" or "Select Option")
+                        or table.concat(texts, ", ")
+
+                    if DropdownConfig.Callback then
+                        if DropdownConfig.Multi then
+                            DropdownConfig.Callback(DropdownFunc.Value)
+                        else
+                            local str = (DropdownFunc.Value ~= nil) and tostring(DropdownFunc.Value) or ""
+                            DropdownConfig.Callback(str)
+                        end
+                    end
                 end
 
-                -- Initialize
-                DropdownFunc.Options = DropdownConfig.Options
-                if DropdownConfig.Default then DropdownFunc:Set(DropdownConfig.Default) end
-                
+                function DropdownFunc:SetValue(val)
+                    self:Set(val)
+                end
+
+                function DropdownFunc:GetValue()
+                    return self.Value
+                end
+
+                function DropdownFunc:SetValues(newList, selecting)
+                    newList = newList or {}
+                    selecting = selecting or (DropdownConfig.Multi and {} or nil)
+                    DropdownFunc:Clear()
+                    for _, v in ipairs(newList) do
+                        DropdownFunc:AddOption(v)
+                    end
+                    DropdownFunc.Options = newList
+                    DropdownFunc:Set(selecting)
+                end
+
+                DropdownFunc:SetValues(DropdownFunc.Options, DropdownFunc.Value)
+
                 CountItem = CountItem + 1
+                CountDropdown = CountDropdown + 1
+                DropdownFunc.Type = "Dropdown"
                 Elements[configKey] = DropdownFunc
                 return DropdownFunc
             end
