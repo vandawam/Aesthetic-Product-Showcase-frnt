@@ -41,6 +41,8 @@ local scriptSetelahRejoin = [[
     loadstring(game:HttpGet("https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/src/pages/abc.lua"))()
 ]]
 
+
+
 -- ============================================================
 -- 2. ANTRIKAN SCRIPT KE EKSEKUTOR (QUEUE ON TELEPORT)
 -- ============================================================
