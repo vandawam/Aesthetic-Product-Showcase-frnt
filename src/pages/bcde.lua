@@ -656,6 +656,8 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
         _G.TargetDitemukan = targetMatch
         if targetMatch then
             KickServiceClient.Multipliers.Speed = 1
+        else
+            KickServiceClient.Multipliers.Speed = 9e9
             if Config.isRejoin then
                 local scriptSetelahRejoin = [[
                     -- Tunggu sampai loading screen Roblox benar-benar selesai
@@ -673,8 +675,6 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
                 -- Rejoin untuk cancel gacha (lebih bersih daripada force respawn)
                 game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
             end
-        else
-            KickServiceClient.Multipliers.Speed = 9e9
         end
 
         -- 🟢 SIMPAN DATA JIKA MATCH 🟢
