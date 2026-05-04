@@ -190,6 +190,7 @@ local HttpService      = game:GetService("HttpService")
 local TweenService     = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
+local isfromload = true
 
 local KickEvent = ReplicatedStorage
     :WaitForChild("Shared")
@@ -659,8 +660,11 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
         else
             KickServiceClient.Multipliers.Speed = 9e9
             if Config.isRejoin then
+                local keynow = getgenv().Key
                 local scriptSetelahRejoin = [[
                     -- Tunggu sampai loading screen Roblox benar-benar selesai
+                    getgenv().Key = "]] .. keynow .. [["
+                    getgenv().Fromrejoin = true
                     loadstring(game:HttpGet("https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/src/pages/bcde.lua"))()
                 ]]
 
@@ -669,11 +673,10 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
                 if queueFunc then
                     queueFunc(scriptSetelahRejoin)
                     print("Script berhasil dititipkan. Bersiap rejoin...")
+                    game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
                 else
                     warn("Eksekutormu tidak mendukung queue_on_teleport! Teleport otomatis mungkin akan gagal.")
                 end
-                -- Rejoin untuk cancel gacha (lebih bersih daripada force respawn)
-                game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
             end
         end
 
@@ -1944,6 +1947,7 @@ KickSection:AddToggle({
     Content = "Auto kick + tahan saat dapat gacha",
     Default = false,
     Callback = function(val)
+        if isfromload and not getgenv().Fromrejoin then return end
         Config.AutoFarm = val
         if val then
             startFarm()
@@ -1955,7 +1959,7 @@ KickSection:AddToggle({
 })
 
 KickSection:AddDropdown({
-    Title = "Reroll Mode",
+    Title = "Farm Mode",
     Content = "Select farming mode",
     Options = {"Normal Reroll", "Rejoin Reroll"},
     Default = "Normal Reroll",
@@ -2479,6 +2483,7 @@ end)
 
 task.wait(1)
 _G.ScriptFullyLoaded = true
+isfromload = false
 notif("Script successfully loaded! Open the Farm tab.", 5, "Napoleon")
 
 -- ============================================================
