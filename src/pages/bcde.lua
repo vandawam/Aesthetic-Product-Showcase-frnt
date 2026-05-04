@@ -656,6 +656,23 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
         _G.TargetDitemukan = targetMatch
         if targetMatch then
             KickServiceClient.Multipliers.Speed = 1
+            if Config.isRejoin then
+                local scriptSetelahRejoin = [[
+                    -- Tunggu sampai loading screen Roblox benar-benar selesai
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/src/pages/bcde.lua"))()
+                ]]
+
+                local queueFunc = queue_on_teleport or queueonteleport or (syn and syn.queue_on_teleport)
+
+                if queueFunc then
+                    queueFunc(scriptSetelahRejoin)
+                    print("Script berhasil dititipkan. Bersiap rejoin...")
+                else
+                    warn("Eksekutormu tidak mendukung queue_on_teleport! Teleport otomatis mungkin akan gagal.")
+                end
+                -- Rejoin untuk cancel gacha (lebih bersih daripada force respawn)
+                game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+            end
         else
             KickServiceClient.Multipliers.Speed = 9e9
         end
@@ -695,25 +712,7 @@ KickEvent.OnClientEvent:Connect(function(arg1, data)
 
                 
             if not targetMatch and Config.EnableSnap then
-                if Config.isRejoin then
-                    local scriptSetelahRejoin = [[
-                        -- Tunggu sampai loading screen Roblox benar-benar selesai
-                        loadstring(game:HttpGet("https://raw.githubusercontent.com/vandawam/Aesthetic-Product-Showcase-frnt/refs/heads/main/src/pages/bcde.lua"))()
-                    ]]
-
-                    local queueFunc = queue_on_teleport or queueonteleport or (syn and syn.queue_on_teleport)
-
-                    if queueFunc then
-                        queueFunc(scriptSetelahRejoin)
-                        print("Script berhasil dititipkan. Bersiap rejoin...")
-                    else
-                        warn("Eksekutormu tidak mendukung queue_on_teleport! Teleport otomatis mungkin akan gagal.")
-                    end
-                    -- Rejoin untuk cancel gacha (lebih bersih daripada force respawn)
-                    game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
-                else
-                    forceRespawnAndTeleport()
-                end
+                forceRespawnAndTeleport()
                 -- ❌ AMPAS: SNAP! (Teleport balik ke SafeZone untuk cancel gacha)
                 isDelaying = false
             else
