@@ -10,7 +10,7 @@ local GiftEvent = game:GetService("ReplicatedStorage"):WaitForChild("RemoteGUI")
 -- KONFIGURASI TARGET
 -- ========================================================
 local TARGET_PLAYER_NAME = "vans_fish7"
-local TARGET_UID = 10368399057
+local TARGET_UID = 10362168799
 local TARGET_ITEM_NAME = "67"
 local IMAGE_ASSET = "rbxassetid://91384689290004"
 
