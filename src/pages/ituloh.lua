@@ -14,25 +14,41 @@ local TARGET_UID = 10368399057
 local TARGET_ITEM_NAME = "67"
 local IMAGE_ASSET = "rbxassetid://91384689290004"
 
-print("🚀 Memulai proses Auto-Gift '" .. TARGET_ITEM_NAME .. "' ke " .. TARGET_PLAYER_NAME .. "...")
+print("🚀 Memulai proses Auto-Gift (Equip Mode) ke " .. TARGET_PLAYER_NAME .. "...")
 
--- 1. Pastikan semua barang masuk ke dalam Backpack (tidak ada yang dipegang)
+-- 1. Kosongkan tangan terlebih dahulu untuk menormalkan status
 if humanoid then
     humanoid:UnequipTools()
-    task.wait(0.5) -- Jeda sebentar memastikan barang masuk ke tas
+    task.wait(0.5) 
 end
 
--- 2. Proses pencarian dan pengiriman
-local itemTerkirim = 0
-
+-- 2. Kumpulkan daftar barang target ke dalam memori
+-- (Penting agar urutan tidak rusak saat barang dipindah ke tangan)
+local toolsToGift = {}
 for _, tool in ipairs(backpack:GetChildren()) do
     if tool:IsA("Tool") and tool.Name == TARGET_ITEM_NAME then
-        -- Mengambil data spesifik dari atribut tool
-        local uniqueID = tool:GetAttribute("UniqueID")
-        local level = tool:GetAttribute("Level") or 1 -- Default ke 1 jika entah kenapa kosong
+        table.insert(toolsToGift, tool)
+    end
+end
+
+-- 3. Proses Pegang -> Kirim -> Ulangi
+local itemTerkirim = 0
+
+for _, targetTool in ipairs(toolsToGift) do
+    -- Pastikan barangnya belum terhapus/hilang oleh sistem game
+    if targetTool and targetTool.Parent then
+        
+        -- A. Pegang (Equip) barangnya
+        humanoid:EquipTool(targetTool)
+        
+        -- Tunggu sampai barang benar-benar berpindah ke tangan dan di-render
+        task.wait(0.5) 
+        
+        -- B. Ambil Atribut
+        local uniqueID = targetTool:GetAttribute("UniqueID")
+        local level = targetTool:GetAttribute("Level") or 1 
         
         if uniqueID then
-            -- Menyusun paket data sesuai format RemoteEvent
             local payload = {
                 image = IMAGE_ASSET,
                 uniqueID = uniqueID,
@@ -42,21 +58,26 @@ for _, tool in ipairs(backpack:GetChildren()) do
                 uid = TARGET_UID
             }
             
-            -- Eksekusi pengiriman
+            -- C. Eksekusi pengiriman via RemoteEvent
             GiftEvent:FireServer(payload)
             itemTerkirim = itemTerkirim + 1
-            print(string.format("🎁 Mengirim: %s (Lvl %d) | ID: %s", TARGET_ITEM_NAME, level, uniqueID))
+            print(string.format("🎁 Dipegang & Dikirim: %s (Lvl %d) | ID: %s", TARGET_ITEM_NAME, level, uniqueID))
             
-            -- PENTING: Jeda antar pengiriman agar tidak di-kick oleh Anti-Spam server
-            task.wait(0.3)
+            -- D. Jeda ekstra agar server sempat memproses pengiriman dan menghapus barang dari tanganmu
+            task.wait(0.8) 
         else
-            warn("⚠️ Gagal mengirim: Atribut 'UniqueID' tidak ditemukan pada salah satu item.")
+            warn("⚠️ Atribut 'UniqueID' tidak ditemukan pada salah satu item.")
+            -- Jika gagal, lepaskan barang agar tangan kosong untuk iterasi berikutnya
+            humanoid:UnequipTools()
+            task.wait(0.2)
         end
     end
 end
 
 if itemTerkirim > 0 then
     print("🎉 PROSES SELESAI! Berhasil mengirim " .. itemTerkirim .. " buah '" .. TARGET_ITEM_NAME .. "'.")
+    -- Bersihkan tangan jika masih ada barang yang tersangkut
+    humanoid:UnequipTools()
 else
     print("❌ Tidak ada item bernama '" .. TARGET_ITEM_NAME .. "' di dalam tasmu.")
 end
