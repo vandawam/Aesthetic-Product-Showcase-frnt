@@ -509,7 +509,7 @@ FarmSection:AddToggle({
     end
 })
 
-local MutationListUI = {"None", "Normal", "Gold", "Diamond", "Rainbow", "Candy", "Lava", "Blizzard", "Lightning"}
+local MutationListUI = {"None", "Normal", "Gold", "Diamond", "Rainbow", "Candy", "Lava", "Blizzard", "Lightning", "Hacker"}
 FarmSection:AddDropdown({
     Title = "Select Mutation", Content = "Select mutation for Auto Apply", Options = MutationListUI, Default = "None",
     Callback = function(val) getgenv().SelectedMutation = val end
