@@ -1,4 +1,4 @@
-getgenv().SpamKey1 = true
+getgenv().SpamKey1 = false
 
 print("⌨️ Spam Tombol '1' Aktif!")
 
