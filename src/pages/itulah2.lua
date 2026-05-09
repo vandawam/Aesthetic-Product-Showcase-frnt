@@ -42,7 +42,7 @@ for _, targetTool in ipairs(toolsToGift) do
         humanoid:EquipTool(targetTool)
         
         -- Tunggu sampai barang benar-benar berpindah ke tangan dan di-render
-        task.wait(0.2) 
+        task.wait(0.1) 
         
         -- B. Ambil Atribut
         local uniqueID = targetTool:GetAttribute("UniqueID")
@@ -64,7 +64,7 @@ for _, targetTool in ipairs(toolsToGift) do
             print(string.format("🎁 Dipegang & Dikirim: %s (Lvl %d) | ID: %s", TARGET_ITEM_NAME, level, uniqueID))
             
             -- D. Jeda ekstra agar server sempat memproses pengiriman dan menghapus barang dari tanganmu
-            task.wait(0.2) 
+            task.wait(0.1) 
         else
             warn("⚠️ Atribut 'UniqueID' tidak ditemukan pada salah satu item.")
             -- Jika gagal, lepaskan barang agar tangan kosong untuk iterasi berikutnya
