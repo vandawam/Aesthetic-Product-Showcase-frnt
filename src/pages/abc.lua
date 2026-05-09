@@ -1,317 +1,317 @@
 -- -- -- ============================================================
 -- -- -- CORE SECURITY: ANTI-HOOK, ANTI-SPY, & ANTI-TAMPER V3.2
--- -- -- ============================================================
-local Proteksi = { Aman = true }
+-- -- -- -- ============================================================
+-- local Proteksi = { Aman = true }
 
-local function Banned(alasan)
-    Proteksi.Aman = false
-    local p = game:GetService("Players").LocalPlayer
-    if p then
-        p:Kick("Access Denied: " .. alasan)
-    end
-    task.wait(9e9)
-end
+-- local function Banned(alasan)
+--     Proteksi.Aman = false
+--     local p = game:GetService("Players").LocalPlayer
+--     if p then
+--         p:Kick("Access Denied: " .. alasan)
+--     end
+--     task.wait(9e9)
+-- end
 
-pcall(function()
-    local dummyEvent = Instance.new("RemoteEvent")
-    local dummyFunc = Instance.new("RemoteFunction")
+-- pcall(function()
+--     local dummyEvent = Instance.new("RemoteEvent")
+--     local dummyFunc = Instance.new("RemoteFunction")
 
-    local realFire = dummyEvent.FireServer
-    local realInvoke = dummyFunc.InvokeServer
+--     local realFire = dummyEvent.FireServer
+--     local realInvoke = dummyFunc.InvokeServer
 
-    if ishooked then
-        if ishooked(realFire) and ishooked(realInvoke) then
-            Banned("RemoteSpy Detected (FireServer & InvokeServer Hook)")
-        end
-    end
+--     if ishooked then
+--         if ishooked(realFire) and ishooked(realInvoke) then
+--             Banned("RemoteSpy Detected (FireServer & InvokeServer Hook)")
+--         end
+--     end
 
-    if iscclosure and islclosure then
-        if islclosure(realFire) and islclosure(realInvoke) then
-            Banned("RemoteSpy Detected (Remote Closure Hook)")
-        end
-    end
+--     if iscclosure and islclosure then
+--         if islclosure(realFire) and islclosure(realInvoke) then
+--             Banned("RemoteSpy Detected (Remote Closure Hook)")
+--         end
+--     end
 
-    local KataTerlarang = {"hydroxide", "turtle spy", "cobalt", "bypasser", "remote spy", "simple spy", "ultimate debugging suite", "dark dex"}
-    local SafeWords = {"codex", "index", "pokedex", "delta", "arceus", "fluxus", "hydrogen", "macsploit", "vegas", "evon", "furk", "trigon", "executor", "menu", "hub", "isylhub"}
-    local IgnoreGuis = {"robloxgui", "chat", "bubblechat", "playerlist", "teleportgui", "robloxpromptgui", "purchaseprompt", "corescriptsroot"}
+--     local KataTerlarang = {"hydroxide", "turtle spy", "cobalt", "bypasser", "remote spy", "simple spy", "ultimate debugging suite", "dark dex"}
+--     local SafeWords = {"codex", "index", "pokedex", "delta", "arceus", "fluxus", "hydrogen", "macsploit", "vegas", "evon", "furk", "trigon", "executor", "menu", "hub", "isylhub"}
+--     local IgnoreGuis = {"robloxgui", "chat", "bubblechat", "playerlist", "teleportgui", "robloxpromptgui", "purchaseprompt", "corescriptsroot"}
 
-    local function isDexOrSpy(str)
-        str = string.lower(str)
-        if str == "dex" or str == "spy" then return false end
+--     local function isDexOrSpy(str)
+--         str = string.lower(str)
+--         if str == "dex" or str == "spy" then return false end
 
-        if string.find(str, "dex") or string.find(str, "spy") then
-            for _, safe in ipairs(SafeWords) do
-                if string.find(str, safe) then return false end
-            end
-            return true
-        end
-        return false
-    end
+--         if string.find(str, "dex") or string.find(str, "spy") then
+--             for _, safe in ipairs(SafeWords) do
+--                 if string.find(str, safe) then return false end
+--             end
+--             return true
+--         end
+--         return false
+--     end
 
-    task.spawn(function()
-        while Proteksi.Aman do
-            task.wait(3)
-            local currentContainers = {game:GetService("CoreGui")}
-            pcall(function() if gethui then table.insert(currentContainers, gethui()) end end)
+--     task.spawn(function()
+--         while Proteksi.Aman do
+--             task.wait(3)
+--             local currentContainers = {game:GetService("CoreGui")}
+--             pcall(function() if gethui then table.insert(currentContainers, gethui()) end end)
             
-            for _, container in ipairs(currentContainers) do
-                pcall(function()
-                    for _, ui in ipairs(container:GetChildren()) do
-                        pcall(function()
-                            local name = string.lower(ui.Name)
-                            if table.find(IgnoreGuis, name) then return end
+--             for _, container in ipairs(currentContainers) do
+--                 pcall(function()
+--                     for _, ui in ipairs(container:GetChildren()) do
+--                         pcall(function()
+--                             local name = string.lower(ui.Name)
+--                             if table.find(IgnoreGuis, name) then return end
 
-                            -- SCAN 1: Cek Nama dari UI (GUI Name)
-                            for _, bad in ipairs(KataTerlarang) do
-                                if string.find(name, bad) then Banned("Illegal UI Detected ("..bad..")") end
-                            end
-                            if isDexOrSpy(name) then Banned("Illegal UI Detected ("..name..")") end
+--                             -- SCAN 1: Cek Nama dari UI (GUI Name)
+--                             for _, bad in ipairs(KataTerlarang) do
+--                                 if string.find(name, bad) then Banned("Illegal UI Detected ("..bad..")") end
+--                             end
+--                             if isDexOrSpy(name) then Banned("Illegal UI Detected ("..name..")") end
                             
-                            -- SCAN 2: Cek Isi Teks di dalam UI
-                            for _, desc in pairs(ui:GetDescendants()) do
-                                pcall(function()
-                                    if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
-                                        local text = string.lower(desc.Text)
-                                        if string.len(text) < 40 then
-                                            -- Kita HANYA mencari kata terlarang spesifik (seperti "dark dex")
-                                            for _, bad in ipairs(KataTerlarang) do
-                                                if string.find(text, bad) then
-                                                    Banned("Illegal Text Element Detected ("..text..")")
-                                                end
-                                            end
+--                             -- SCAN 2: Cek Isi Teks di dalam UI
+--                             for _, desc in pairs(ui:GetDescendants()) do
+--                                 pcall(function()
+--                                     if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
+--                                         local text = string.lower(desc.Text)
+--                                         if string.len(text) < 40 then
+--                                             -- Kita HANYA mencari kata terlarang spesifik (seperti "dark dex")
+--                                             for _, bad in ipairs(KataTerlarang) do
+--                                                 if string.find(text, bad) then
+--                                                     Banned("Illegal Text Element Detected ("..text..")")
+--                                                 end
+--                                             end
                                             
-                                            -- FIX V3.2:
-                                            -- Pengecekan isDexOrSpy(text) DIHAPUS dari sini!
-                                            -- Ini mencegah false positive saat ada notifikasi game/executor
-                                            -- yang bertuliskan nama player seperti "you've joined dex".
-                                        end
-                                    end
-                                end)
-                            end
-                        end)
-                    end
-                end)
-            end
-        end
-    end)
-end)
+--                                             -- FIX V3.2:
+--                                             -- Pengecekan isDexOrSpy(text) DIHAPUS dari sini!
+--                                             -- Ini mencegah false positive saat ada notifikasi game/executor
+--                                             -- yang bertuliskan nama player seperti "you've joined dex".
+--                                         end
+--                                     end
+--                                 end)
+--                             end
+--                         end)
+--                     end
+--                 end)
+--             end
+--         end
+--     end)
+-- end)
 
-if not Proteksi.Aman then
-    return 
-end
+-- if not Proteksi.Aman then
+--     return 
+-- end
 
--- -- -- -- -- -- ============================================================
--- -- -- -- -- -- KEY SYSTEM & TRACKING
--- -- -- -- -- -- ============================================================
+-- -- -- -- -- -- -- ============================================================
+-- -- -- -- -- -- -- KEY SYSTEM & TRACKING
+-- -- -- -- -- -- -- ============================================================
 
-local function showWarningUI(message)
-    local ScreenGui = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner")
-    local Title = Instance.new("TextLabel")
-    local Key = Instance.new("TextLabel")
-    local Description = Instance.new("TextLabel")
-    local ButtonClose = Instance.new("TextButton")
-    local UICorner_2 = Instance.new("UICorner")
-    local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-    local Background = Instance.new("Frame")
-    local UIStroke = Instance.new("UIStroke")
+-- local function showWarningUI(message)
+--     local ScreenGui = Instance.new("ScreenGui")
+--     local Frame = Instance.new("Frame")
+--     local UICorner = Instance.new("UICorner")
+--     local Title = Instance.new("TextLabel")
+--     local Key = Instance.new("TextLabel")
+--     local Description = Instance.new("TextLabel")
+--     local ButtonClose = Instance.new("TextButton")
+--     local UICorner_2 = Instance.new("UICorner")
+--     local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+--     local Background = Instance.new("Frame")
+--     local UIStroke = Instance.new("UIStroke")
 
-    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.SafeAreaCompatibility = Enum.SafeAreaCompatibility.None
-    ScreenGui.ScreenInsets = Enum.ScreenInsets.None
+--     ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+--     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+--     ScreenGui.SafeAreaCompatibility = Enum.SafeAreaCompatibility.None
+--     ScreenGui.ScreenInsets = Enum.ScreenInsets.None
 
-    Background.Name = "Background"
-    Background.Parent = ScreenGui
-    Background.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-    Background.BackgroundTransparency = 0.300
-    Background.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Background.BorderSizePixel = 0
-    Background.Size = UDim2.new(1, 0, 1, 0)
-    Background.ZIndex = 0
+--     Background.Name = "Background"
+--     Background.Parent = ScreenGui
+--     Background.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+--     Background.BackgroundTransparency = 0.300
+--     Background.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     Background.BorderSizePixel = 0
+--     Background.Size = UDim2.new(1, 0, 1, 0)
+--     Background.ZIndex = 0
 
-    Frame.Parent = ScreenGui
-    Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
-    Frame.BackgroundTransparency = 0.100
-    Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Frame.BorderSizePixel = 0
-    Frame.Position = UDim2.new(0.248725787, 0, 0.40242058, 0)
-    Frame.Size = UDim2.new(0.502548397, 0, 0.146747351, 0)
+--     Frame.Parent = ScreenGui
+--     Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+--     Frame.BackgroundTransparency = 0.100
+--     Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     Frame.BorderSizePixel = 0
+--     Frame.Position = UDim2.new(0.248725787, 0, 0.40242058, 0)
+--     Frame.Size = UDim2.new(0.502548397, 0, 0.146747351, 0)
 
-    UICorner.CornerRadius = UDim.new(0.0500000007, 0)
-    UICorner.Parent = Frame
+--     UICorner.CornerRadius = UDim.new(0.0500000007, 0)
+--     UICorner.Parent = Frame
     
-    UIStroke.Parent = Frame
-    UIStroke.Color = Color3.fromRGB(255, 255, 255)
-    UIStroke.Thickness = 1
+--     UIStroke.Parent = Frame
+--     UIStroke.Color = Color3.fromRGB(255, 255, 255)
+--     UIStroke.Thickness = 1
 
-    Title.Name = "Title"
-    Title.Parent = Frame
-    Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Title.BackgroundTransparency = 1.000
-    Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Title.BorderSizePixel = 0
-    Title.Position = UDim2.new(0.198198214, 0, 0, 0)
-    Title.Size = UDim2.new(0.6006006, 0, 0.289151847, 0)
-    Title.Font = Enum.Font.GothamBold
-    Title.Text = "Napoleon | Warning"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextScaled = true
-    Title.TextSize = 14.000
-    Title.TextWrapped = true
+--     Title.Name = "Title"
+--     Title.Parent = Frame
+--     Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+--     Title.BackgroundTransparency = 1.000
+--     Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     Title.BorderSizePixel = 0
+--     Title.Position = UDim2.new(0.198198214, 0, 0, 0)
+--     Title.Size = UDim2.new(0.6006006, 0, 0.289151847, 0)
+--     Title.Font = Enum.Font.GothamBold
+--     Title.Text = "Napoleon | Warning"
+--     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+--     Title.TextScaled = true
+--     Title.TextSize = 14.000
+--     Title.TextWrapped = true
 
-    Key.Name = "Key"
-    Key.Parent = Frame
-    Key.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Key.BackgroundTransparency = 1.000
-    Key.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Key.BorderSizePixel = 0
-    Key.Position = UDim2.new(0.22862418, 0, 0.550000012, 0)
-    Key.Size = UDim2.new(0.533663452, 0, 0.154971421, 0)
-    Key.Font = Enum.Font.GothamBold
-    Key.Text = "discord.gg/napoleonsc"
-    Key.TextColor3 = Color3.fromRGB(106, 106, 124)
-    Key.TextScaled = true
-    Key.TextSize = 14.000
-    Key.TextWrapped = true
+--     Key.Name = "Key"
+--     Key.Parent = Frame
+--     Key.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+--     Key.BackgroundTransparency = 1.000
+--     Key.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     Key.BorderSizePixel = 0
+--     Key.Position = UDim2.new(0.22862418, 0, 0.550000012, 0)
+--     Key.Size = UDim2.new(0.533663452, 0, 0.154971421, 0)
+--     Key.Font = Enum.Font.GothamBold
+--     Key.Text = "discord.gg/napoleonsc"
+--     Key.TextColor3 = Color3.fromRGB(106, 106, 124)
+--     Key.TextScaled = true
+--     Key.TextSize = 14.000
+--     Key.TextWrapped = true
 
-    Description.Name = "Description"
-    Description.Parent = Frame
-    Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Description.BackgroundTransparency = 1.000
-    Description.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Description.BorderSizePixel = 0
-    Description.Position = UDim2.new(0.060851898, 0, 0.306907117, 0)
-    Description.Size = UDim2.new(0.871821165, 0, 0.216986924, 0)
-    Description.Font = Enum.Font.Gotham
-    Description.Text = message
-    Description.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Description.TextScaled = true
-    Description.TextSize = 14.000
-    Description.TextWrapped = true
+--     Description.Name = "Description"
+--     Description.Parent = Frame
+--     Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+--     Description.BackgroundTransparency = 1.000
+--     Description.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     Description.BorderSizePixel = 0
+--     Description.Position = UDim2.new(0.060851898, 0, 0.306907117, 0)
+--     Description.Size = UDim2.new(0.871821165, 0, 0.216986924, 0)
+--     Description.Font = Enum.Font.Gotham
+--     Description.Text = message
+--     Description.TextColor3 = Color3.fromRGB(255, 255, 255)
+--     Description.TextScaled = true
+--     Description.TextSize = 14.000
+--     Description.TextWrapped = true
 
-    ButtonClose.Name = "ButtonClose"
-    ButtonClose.Parent = Frame
-    ButtonClose.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-    ButtonClose.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    ButtonClose.BorderSizePixel = 0
-    ButtonClose.Position = UDim2.new(0.385395527, 0, 0.747835159, 0)
-    ButtonClose.Size = UDim2.new(0.229208946, 0, 0.206185549, 0)
-    ButtonClose.Font = Enum.Font.GothamBold
-    ButtonClose.Text = "Close"
-    ButtonClose.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ButtonClose.TextScaled = true
-    ButtonClose.TextSize = 14.000
-    ButtonClose.TextWrapped = true
+--     ButtonClose.Name = "ButtonClose"
+--     ButtonClose.Parent = Frame
+--     ButtonClose.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+--     ButtonClose.BorderColor3 = Color3.fromRGB(0, 0, 0)
+--     ButtonClose.BorderSizePixel = 0
+--     ButtonClose.Position = UDim2.new(0.385395527, 0, 0.747835159, 0)
+--     ButtonClose.Size = UDim2.new(0.229208946, 0, 0.206185549, 0)
+--     ButtonClose.Font = Enum.Font.GothamBold
+--     ButtonClose.Text = "Close"
+--     ButtonClose.TextColor3 = Color3.fromRGB(255, 255, 255)
+--     ButtonClose.TextScaled = true
+--     ButtonClose.TextSize = 14.000
+--     ButtonClose.TextWrapped = true
 
-    UICorner_2.CornerRadius = UDim.new(1, 0)
-    UICorner_2.Parent = ButtonClose
+--     UICorner_2.CornerRadius = UDim.new(1, 0)
+--     UICorner_2.Parent = ButtonClose
 
-    UITextSizeConstraint.Parent = ButtonClose
-    UITextSizeConstraint.MaxTextSize = 14
+--     UITextSizeConstraint.Parent = ButtonClose
+--     UITextSizeConstraint.MaxTextSize = 14
     
-    ButtonClose.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-end
+--     ButtonClose.MouseButton1Click:Connect(function()
+--         ScreenGui:Destroy()
+--     end)
+-- end
 
-local key = getgenv().Key or _G.Key
-if not key then
-    showWarningUI("Key tidak ditemukan! Silahkan masukkan getgenv().Key")
-    return
-end
+-- local key = getgenv().Key or _G.Key
+-- if not key then
+--     showWarningUI("Key tidak ditemukan! Silahkan masukkan getgenv().Key")
+--     return
+-- end
 
-local hwid = tostring(game:GetService("Players").LocalPlayer.UserId)
-local checkUrl = "http://napoleon-script.my.id/api/check?key=" .. key .. "&hwid=" .. hwid
+-- local hwid = tostring(game:GetService("Players").LocalPlayer.UserId)
+-- local checkUrl = "http://napoleon-script.my.id/api/check?key=" .. key .. "&hwid=" .. hwid
 
--- Decrypt XOR (mirror dari server encryptXOR)
-local function decryptXOR(hexStr, secretKey)
-    local result = ""
-    local charIdx = 0
-    for i = 1, #hexStr, 2 do
-        local hexByte = hexStr:sub(i, i + 1)
-        local byte = tonumber(hexByte, 16)
-        if not byte then return nil end
-        local keyChar = secretKey:byte((charIdx % #secretKey) + 1)
-        result = result .. string.char(bit32.bxor(byte, keyChar))
-        charIdx = charIdx + 1
-    end
-    return result
-end
+-- -- Decrypt XOR (mirror dari server encryptXOR)
+-- local function decryptXOR(hexStr, secretKey)
+--     local result = ""
+--     local charIdx = 0
+--     for i = 1, #hexStr, 2 do
+--         local hexByte = hexStr:sub(i, i + 1)
+--         local byte = tonumber(hexByte, 16)
+--         if not byte then return nil end
+--         local keyChar = secretKey:byte((charIdx % #secretKey) + 1)
+--         result = result .. string.char(bit32.bxor(byte, keyChar))
+--         charIdx = charIdx + 1
+--     end
+--     return result
+-- end
 
-local SECRET_KEY = "HOEEEE_MALING_PANGSIT"
+-- local SECRET_KEY = "HOEEEE_MALING_PANGSIT"
 
-local successCheck, responseCheck = pcall(function()
-    return game:HttpGet(checkUrl)
-end)
+-- local successCheck, responseCheck = pcall(function()
+--     return game:HttpGet(checkUrl)
+-- end)
 
-if successCheck then
-    local HttpService = game:GetService("HttpService")
-    local decrypted = decryptXOR(responseCheck, SECRET_KEY)
-    local ok, data = pcall(function() return HttpService:JSONDecode(decrypted or "") end)
-    if ok and type(data) == "table" then
-        if not data.valid then
-            showWarningUI(data.message or "Key tidak valid / Belum reset HWID!")
-            return
-        end
-    else
-        showWarningUI("Invalid response dari server.")
-        return
-    end
-else
-    showWarningUI("Gagal terhubung ke server validasi key.")
-    return
-end
+-- if successCheck then
+--     local HttpService = game:GetService("HttpService")
+--     local decrypted = decryptXOR(responseCheck, SECRET_KEY)
+--     local ok, data = pcall(function() return HttpService:JSONDecode(decrypted or "") end)
+--     if ok and type(data) == "table" then
+--         if not data.valid then
+--             showWarningUI(data.message or "Key tidak valid / Belum reset HWID!")
+--             return
+--         end
+--     else
+--         showWarningUI("Invalid response dari server.")
+--         return
+--     end
+-- else
+--     showWarningUI("Gagal terhubung ke server validasi key.")
+--     return
+-- end
 
--- Track eksekusi script ke backend
-local function getExecutorName()
-    if identifyexecutor then return identifyexecutor() end
-    if syn then return "Synapse X"
-    elseif Ronix then return "Ronix"
-    elseif fluxus then return "Fluxus"
-    elseif DELTA_VERSION then return "Delta"
-    else return "Unknown" end
-end
+-- -- Track eksekusi script ke backend
+-- local function getExecutorName()
+--     if identifyexecutor then return identifyexecutor() end
+--     if syn then return "Synapse X"
+--     elseif Ronix then return "Ronix"
+--     elseif fluxus then return "Fluxus"
+--     elseif DELTA_VERSION then return "Delta"
+--     else return "Unknown" end
+-- end
 
-task.spawn(function()
-    pcall(function()
-        local currentTime = os.time()
-        local logPath = "Napoleon_SlimeRNG_LastExec.txt"
+-- task.spawn(function()
+--     pcall(function()
+--         local currentTime = os.time()
+--         local logPath = "Napoleon_SlimeRNG_LastExec.txt"
         
-        -- Cooldown: 1 Jam (3600 detik) untuk mencegah spam di eksekusi/server hop
-        if isfile and readfile and writefile then
-            if isfile(logPath) then
-                local lastTime = tonumber(readfile(logPath))
-                if lastTime and (currentTime - lastTime) < 3600 then
-                    return -- Jangan kirim log lagi jika belum 1 jam
-                end
-            end
-            writefile(logPath, tostring(currentTime))
-        else
-            if getgenv()._Napoleon_ExecLogged_Slime then return end
-            getgenv()._Napoleon_ExecLogged_Slime = true
-        end
+--         -- Cooldown: 1 Jam (3600 detik) untuk mencegah spam di eksekusi/server hop
+--         if isfile and readfile and writefile then
+--             if isfile(logPath) then
+--                 local lastTime = tonumber(readfile(logPath))
+--                 if lastTime and (currentTime - lastTime) < 3600 then
+--                     return -- Jangan kirim log lagi jika belum 1 jam
+--                 end
+--             end
+--             writefile(logPath, tostring(currentTime))
+--         else
+--             if getgenv()._Napoleon_ExecLogged_Slime then return end
+--             getgenv()._Napoleon_ExecLogged_Slime = true
+--         end
 
-        local player = game:GetService("Players").LocalPlayer
-        if player then
-            local userid = tostring(player.UserId)
-            local username = player.Name
-            local executor = getExecutorName()
-            local placeid = tostring(game.PlaceId)
+--         local player = game:GetService("Players").LocalPlayer
+--         if player then
+--             local userid = tostring(player.UserId)
+--             local username = player.Name
+--             local executor = getExecutorName()
+--             local placeid = tostring(game.PlaceId)
             
-            local url = "http://napoleon-script.my.id/api/track"
-                .. "?script=slime-rng"
-                .. "&userid=" .. userid
-                .. "&username=" .. username
-                .. "&executor=" .. (executor:gsub(" ", "%%20"))
-                .. "&placeid=" .. placeid
-                .. "&key=" .. key
+--             local url = "http://napoleon-script.my.id/api/track"
+--                 .. "?script=slime-rng"
+--                 .. "&userid=" .. userid
+--                 .. "&username=" .. username
+--                 .. "&executor=" .. (executor:gsub(" ", "%%20"))
+--                 .. "&placeid=" .. placeid
+--                 .. "&key=" .. key
                 
-            game:HttpGet(url)
-        end
-    end)
-end)
+--             game:HttpGet(url)
+--         end
+--     end)
+-- end)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
