@@ -689,7 +689,7 @@ local function GetBrainrotNames()
 end
 
 local BrainrotNames = GetBrainrotNames()
-local RarityList = {"None", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret", "Cosmic", "Celestial", "Divine", "Godly", "Admin"}
+local RarityList = {"None", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Secret", "Cosmic", "Celestial", "Divine", "Godly", "Admin", "Infinity"}
 local MutationList = {"None", "Normal", "Gold", "Diamond", "Rainbow", "Candy", "Lava", "Blizzard", "Lightning", "Hacker"}
 
 local dropTarget = CreateSmartDropdown("Target To Keep", "Select NAME of item to KEEP", BrainrotNames, "KeepTargets")
