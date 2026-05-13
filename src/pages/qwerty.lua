@@ -13,12 +13,26 @@ getgenv().UltimateAutoFarm = true
 local FlySpeed = 350
 local AttackRange = 35
 local EvasionHeight = 70 -- Jarak manuver ke atas setelah kill
-local IgnoredTitans = {} -- Sistem Cooldown agar Titan yang tertinggal bisa dikejar lagi
+
+local ConfirmedKills = {} -- Blacklist permanen berdasarkan konfirmasi darah dari server
+local AttackCooldowns = {} -- Cooldown singkat (1 detik) anti-spam sambil menunggu server merespons
+
+-- ============================================================
+-- 📡 SERVER KILL CONFIRMATION LISTENER
+-- ============================================================
+-- Mendengarkan balasan dari server untuk memastikan tebasan kita benar-benar masuk
+POSTRemote.OnClientEvent:Connect(function(category, action, arg3, targetPart)
+    if category == "Effects" and action == "Blood" then
+        if typeof(targetPart) == "Instance" and targetPart.Name == "Nape" then
+            -- Server mengkonfirmasi Nape ini berdarah (Berhasil di-slash)
+            ConfirmedKills[targetPart] = true
+        end
+    end
+end)
 
 -- ============================================================
 -- 🛡️ SISTEM ANTI-STUCK & NOCLIP
 -- ============================================================
-
 local function SetNoclip(titan)
     for _, part in ipairs(titan:GetDescendants()) do
         if part:IsA("BasePart") then
@@ -45,7 +59,6 @@ end)
 -- ============================================================
 -- 🛠️ FUNGSI UTILITAS
 -- ============================================================
-
 local function AreBladesEmpty()
     local myChar = workspace.Characters:FindFirstChild(LocalPlayer.Name)
     local rig = myChar and myChar:FindFirstChild("Rig_" .. LocalPlayer.Name)
@@ -78,7 +91,7 @@ end
 -- ============================================================
 -- ⚔️ LOGIKA UTAMA (PIERCING RAILGUN + HIT & RUN)
 -- ============================================================
-print("⚔️ Ultra-Smooth (Hit & Run + Cooldown Fix) Aktif!")
+print("⚔️ Ultra-Smooth Aktif! Menggunakan Server Kill Confirmation.")
 
 task.spawn(function()
     while getgenv().UltimateAutoFarm do
@@ -104,17 +117,19 @@ task.spawn(function()
                 hrp.Anchored = false
             end
 
-            -- 2. TARGETING DENGAN COOLDOWN
+            -- 2. TARGETING DENGAN SERVER CONFIRMATION
             local targetNape, targetTitan = nil, nil
             local distMin = math.huge
             local currentTime = tick()
 
             for _, titan in ipairs(TitansFolder:GetChildren()) do
                 if titan.Parent == TitansFolder then
-                    -- Abaikan Titan jika baru saja ditebas dalam 3 detik terakhir
-                    if not IgnoredTitans[titan] or (currentTime - IgnoredTitans[titan] > 3) then
-                        local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit") and titan.Hitboxes.Hit:FindFirstChild("Nape")
-                        if nape then
+                    local nape = titan:FindFirstChild("Hitboxes") and titan.Hitboxes:FindFirstChild("Hit") and titan.Hitboxes.Hit:FindFirstChild("Nape")
+                    
+                    -- Cek apakah Nape ada DAN belum dikonfirmasi mati oleh server
+                    if nape and not ConfirmedKills[nape] then
+                        -- Cooldown anti-spam 1 detik saja agar tidak mengirim remote beruntun ke Titan yang sama
+                        if not AttackCooldowns[titan] or (currentTime - AttackCooldowns[titan] > 1) then
                             local d = (hrp.Position - nape.Position).Magnitude
                             if d < distMin then
                                 distMin = d
@@ -155,8 +170,8 @@ task.spawn(function()
                             POSTRemote:FireServer("Attacks", "Slash", false)
                         end)
                         
-                        -- Masukkan Titan ke daftar cooldown (Bukan blacklist permanen)
-                        IgnoredTitans[targetTitan] = tick()
+                        -- Set cooldown 1 detik menunggu konfirmasi darah dari server
+                        AttackCooldowns[targetTitan] = tick()
                         break 
                     end
                     task.wait()
